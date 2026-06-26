@@ -1,12 +1,14 @@
 {
-  "name": "trading-calc",
+    "name": "trading-calc",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
+  "scripts"
+  : {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:calculations": "tsc lib/calculations.test.ts --outDir /private/tmp/prop-pilot-tests --module commonjs --target es2017 --skipLibCheck && node /private/tmp/prop-pilot-tests/calculations.test.js"
   },
   "dependencies": {
     "next": "16.2.9",
@@ -18,9 +20,15 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "autoprefixer": "^10.5.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
-    "tailwindcss": "^4",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^4.3.1",
     "typescript": "^5"
+  },
+  "allowScripts": {
+    "sharp@0.34.5": true,
+    "unrs-resolver@1.12.2": true
   }
 }
