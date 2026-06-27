@@ -14,8 +14,35 @@ import {
   calculatePositionSizeLots,
   calculateRiskAmount,
 } from "@/lib/calculations";
+import {
+  calculatorCard,
+  calculatorContent,
+  calculatorHeader,
+  fieldGroup,
+  fieldIcon,
+  fieldLabel,
+  iconBadge,
+  inputGrid,
+  mutedText,
+  primaryResultCard,
+  primaryResultValue,
+  resultCard,
+  resultGrid,
+  resultLabel,
+  resultValue,
+  sectionLabel,
+  titleRow,
+} from "@/lib/design-system";
+import {
+  Calculator as CalculatorIcon,
+  CircleDollarSign,
+  Percent,
+  Ruler,
+  Wallet,
+} from "lucide-react";
 import { useState } from "react";
 
+// Keeps positive-only inputs from accepting negative values.
 function keepPositiveNumber(value: string) {
   const numberValue = Number(value);
 
@@ -27,35 +54,45 @@ function keepPositiveNumber(value: string) {
 }
 
 export default function Calculator() {
+  // Input state.
   const [accountSize, setAccountSize] = useState("");
   const [riskPercent, setRiskPercent] = useState("1");
   const [stopLoss, setStopLoss] = useState("");
   const [pipValue, setPipValue] = useState("10");
 
+  // Convert input strings into numbers for calculation helpers.
   const account = Number(accountSize) || 0;
   const risk = Number(riskPercent) || 0;
   const sl = Number(stopLoss) || 0;
   const pip = Number(pipValue) || 0;
 
+  // Risk calculator results.
   const dollarRisk = calculateRiskAmount(account, risk);
   const positionSize = calculatePositionSizeLots(dollarRisk, sl, pip);
 
+  // Calculator card layout.
   return (
-   <Card className="w-full max-w-[520px] px-6 py-8 sm:px-10 sm:py-10">
-      <CardHeader>
-        <CardTitle>Prop Pilot</CardTitle>
-        <CardDescription className="text-lg font-medium text-slate-300">
-          Risk Calculator
-        </CardDescription>
-        <CardDescription className="leading-6">
+    <Card className={calculatorCard}>
+      <CardHeader className={calculatorHeader}>
+        <div className={titleRow}>
+          <span className={iconBadge}>
+            <CalculatorIcon className="size-5" />
+          </span>
+          <CardTitle>Risk Calculator</CardTitle>
+        </div>
+        <CardDescription className="leading-5">
           Calculate your position size and risk before every trade.
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="pt-10">
-        <div className="grid gap-6">
-          <div className="grid gap-3">
-            <Label htmlFor="account-size">Account Size ($)</Label>
+      <CardContent className={calculatorContent}>
+        {/* Input section */}
+        <div className={inputGrid}>
+          <div className={fieldGroup}>
+            <Label className={fieldLabel} htmlFor="account-size">
+              <Wallet className={fieldIcon} />
+              Account Size ($)
+            </Label>
             <Input
               id="account-size"
               min="0"
@@ -69,8 +106,11 @@ export default function Calculator() {
             />
           </div>
 
-          <div className="grid gap-3">
-            <Label htmlFor="risk-percent">Risk (%)</Label>
+          <div className={fieldGroup}>
+            <Label className={fieldLabel} htmlFor="risk-percent">
+              <Percent className={fieldIcon} />
+              Risk (%)
+            </Label>
             <Input
               id="risk-percent"
               min="0"
@@ -84,8 +124,11 @@ export default function Calculator() {
             />
           </div>
 
-          <div className="grid gap-3">
-            <Label htmlFor="stop-loss">Stop Loss (pips)</Label>
+          <div className={fieldGroup}>
+            <Label className={fieldLabel} htmlFor="stop-loss">
+              <Ruler className={fieldIcon} />
+              Stop Loss (pips)
+            </Label>
             <Input
               id="stop-loss"
               min="0"
@@ -97,8 +140,11 @@ export default function Calculator() {
             />
           </div>
 
-          <div className="grid gap-3">
-            <Label htmlFor="pip-value">Dollar Value per Pip</Label>
+          <div className={fieldGroup}>
+            <Label className={fieldLabel} htmlFor="pip-value">
+              <CircleDollarSign className={fieldIcon} />
+              Dollar Value per Pip
+            </Label>
             <Input
               id="pip-value"
               min="0"
@@ -110,28 +156,33 @@ export default function Calculator() {
             />
           </div>
 
-          <p className="text-sm leading-6 text-slate-400">
+          <p className={`${mutedText} sm:col-span-2`}>
             Most USD-quoted forex pairs use $10 per pip for one standard lot.
           </p>
         </div>
 
-        <Separator className="my-7" />
+        <Separator />
 
-                <div className="grid gap-4">
-          <h3 className="text-sm font-bold uppercase tracking-wide text-slate-400">
+        {/* Results section */}
+        <div className={resultGrid}>
+          <h3 className={`${sectionLabel} sm:col-span-2`}>
             Results
           </h3>
 
-          <Card className="rounded-lg bg-slate-950 p-5 shadow-none">
-            <p className="mb-2 text-sm font-medium text-slate-400">Risk Amount</p>
-            <h2 className="text-3xl font-bold leading-none text-white">
+          <Card className={resultCard}>
+            <p className={resultLabel}>
+              Risk Amount
+            </p>
+            <h2 className={resultValue}>
               ${dollarRisk.toFixed(2)}
             </h2>
           </Card>
 
-          <Card className="rounded-lg bg-slate-950 p-5 shadow-none">
-            <p className="mb-2 text-sm font-medium text-slate-400">Position Size</p>
-            <h2 className="text-3xl font-bold leading-none text-white">
+          <Card className={primaryResultCard}>
+            <p className={resultLabel}>
+              Position Size
+            </p>
+            <h2 className={primaryResultValue}>
               {positionSize.toFixed(2)} Lots
             </h2>
           </Card>

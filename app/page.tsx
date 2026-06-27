@@ -1,13 +1,10 @@
-import Calculator from "@/components/Calculator";
-import DailyDrawdownCalculator from "@/components/DailyDrawdownCalculator";
+import PropPilotWizard from "@/components/PropPilotWizard";
 
 export default function Page() {
   return (
+    // Page shell currently renders the guided wizard experience.
     <main>
-      <div className="grid w-full max-w-[520px] gap-8">
-        <Calculator />
-        <DailyDrawdownCalculator />
-      </div>
+      <PropPilotWizard />
     </main>
   );
 }

@@ -1,3 +1,4 @@
+// Risk Calculator formulas.
 export function calculateRiskAmount(accountSize: number, riskPercent: number) {
   return accountSize * (riskPercent / 100);
 }
@@ -14,6 +15,7 @@ export function calculatePositionSizeLots(
   return riskAmount / (stopLossPips * pipValuePerStandardLot);
 }
 
+// Daily Drawdown Calculator formulas.
 export function calculateDailyLossLimit(
   accountBalance: number,
   dailyLossPercent: number
@@ -43,6 +45,7 @@ export function calculateRemainingRoomAfterOpenRisk(
   return remainingRoom - openTradeRisk;
 }
 
+// Daily Drawdown status and advice helpers.
 export function getDailyDrawdownStatus(
   remainingRoom: number,
   dailyLossLimit: number
