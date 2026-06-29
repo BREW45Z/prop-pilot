@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Prop Pilot
 
-## Getting Started
+Prop Pilot is a launch-focused web app for prop firm traders who want to check risk, daily drawdown, and rule pressure before placing trades.
 
-First, run the development server:
+The product is designed to feel calm, premium, modern, and trustworthy. It is a disciplined trading tool, not a flashy trading signal product.
+
+## Current MVP
+
+- Minimal landing screen
+- Start Calculating flow
+- Sidebar dashboard
+- Risk Calculator
+- Daily Drawdown Calculator
+- Guided wizard flow
+- Local storage for calculator inputs
+- Copy Summary
+- Share Card modal
+- PNG download
+- Feedback button
+- Randomized Trading Insights
+- Helpful term explanations/tooltips
+- Dark mode and light mode
+- Theme preference persistence
+- Geist global typography
+- Live animated atoms background
+- Responsive landing and dashboard experience
+
+## Product Flow
+
+```txt
+Landing Screen -> Start Calculating -> Dashboard with Sidebar -> Risk Calculator or Daily Drawdown Wizard -> Results -> Copy Summary or Share Card / PNG Download
+```
+
+The landing screen is intentionally minimal. It should not become a long marketing page during the MVP stage.
+
+## Development
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Run verification:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run lint
+npx tsc --noEmit
+npm run test:calculations
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Launch QA Checklist
 
-## Learn More
+- Landing page flow
+- Start Calculating action
+- Desktop layout
+- Tablet layout
+- Mobile layout
+- Dark mode
+- Light mode
+- Theme persistence after refresh
+- Calculator input persistence
+- Risk Calculator outputs
+- Daily Drawdown outputs
+- Copy Summary
+- Share Card
+- PNG download
+- Tooltips
+- Feedback button and real email address
+- Animated background performance
+- Reduced-motion behavior
+- No placeholders, test copy, or unfinished UI
 
-To learn more about Next.js, take a look at the following resources:
+## Important Rule
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Calculator formulas must remain documented and tested before changes are made.

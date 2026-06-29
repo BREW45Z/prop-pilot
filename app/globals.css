@@ -1,5 +1,45 @@
 @import "tailwindcss";
 
+/* Theme tokens. */
+:root,
+:root[data-theme="dark"] {
+  --app-bg: #050914;
+  --surface: rgba(12, 20, 35, 0.82);
+  --surface-muted: rgba(15, 23, 42, 0.56);
+  --surface-strong: rgba(2, 6, 23, 0.78);
+  --border-soft: rgba(51, 65, 85, 0.72);
+  --border-strong: rgba(100, 116, 139, 0.8);
+  --text-primary: #f8fafc;
+  --text-soft: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-faint: #64748b;
+  --accent: #22d3ee;
+  --accent-strong: #7c3aed;
+  --accent-ring: rgba(34, 211, 238, 0.18);
+  --atom-primary: rgba(34, 211, 238, 0.38);
+  --atom-secondary: rgba(124, 58, 237, 0.34);
+  --atom-dot: rgba(96, 165, 250, 0.8);
+}
+
+:root[data-theme="light"] {
+  --app-bg: #dfe4ec;
+  --surface: rgba(235, 239, 246, 0.9);
+  --surface-muted: rgba(222, 228, 237, 0.78);
+  --surface-strong: rgba(241, 244, 248, 0.94);
+  --border-soft: rgba(55, 65, 81, 0.28);
+  --border-strong: rgba(17, 24, 39, 0.55);
+  --text-primary: #111827;
+  --text-soft: #334155;
+  --text-muted: #64748b;
+  --text-faint: #94a3b8;
+  --accent: #2563eb;
+  --accent-strong: #7c3aed;
+  --accent-ring: rgba(37, 99, 235, 0.18);
+  --atom-primary: rgba(15, 23, 42, 0.14);
+  --atom-secondary: rgba(30, 41, 59, 0.12);
+  --atom-dot: rgba(15, 23, 42, 0.32);
+}
+
 /* Global sizing reset. */
 * {
   box-sizing: border-box;
@@ -20,13 +60,21 @@ input[type="number"]::-webkit-outer-spin-button {
 body {
   margin: 0;
   min-height: 100vh;
-  background: #000;
-  color: white;
-  font-family: Arial, sans-serif;
+  background: var(--app-bg);
+  color: var(--text-primary);
+  font-family: var(--font-geist), Arial, sans-serif;
+  transition:
+    background-color 220ms ease,
+    color 220ms ease;
+}
+
+:root[data-theme="light"] body,
+:root[data-theme="light"] .prop-app {
+  background-color: #dfe4ec !important;
 }
 
 /* Root page layout. */
-main {
+.app-root {
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -35,7 +83,262 @@ main {
 }
 
 @media (max-width: 520px) {
-  main {
+  .app-root {
     align-items: flex-start;
   }
+}
+
+/* Lightweight living-atoms background. */
+.atom-field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--app-bg), var(--app-bg)),
+    radial-gradient(circle, var(--atom-dot) 0 1.2px, transparent 1.4px) 0 0 / 7rem 7rem,
+    radial-gradient(circle at 20% 20%, var(--atom-secondary), transparent 26rem),
+    radial-gradient(circle at 78% 18%, var(--atom-primary), transparent 24rem),
+    radial-gradient(circle at 50% 84%, rgba(37, 99, 235, 0.1), transparent 28rem);
+  opacity: 0.95;
+}
+
+.atom-field::before,
+.atom-field::after {
+  position: absolute;
+  width: 42rem;
+  height: 42rem;
+  content: "";
+  border: 1px solid var(--atom-primary);
+  border-radius: 9999px;
+  opacity: 0.62;
+  transform: rotate(-16deg);
+  animation: atom-drift 4s ease-in-out infinite alternate;
+}
+
+.atom-field::before {
+  top: 7%;
+  left: -6rem;
+}
+
+.atom-field::after {
+  right: -9rem;
+  bottom: 8%;
+  border-color: var(--atom-secondary);
+  animation-duration: 5.5s;
+  animation-delay: -2s;
+}
+
+.atom-line {
+  position: absolute;
+  width: 18rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--atom-primary), transparent);
+  opacity: 0.52;
+  transform-origin: center;
+  animation: atom-breathe 1.9s ease-in-out infinite alternate;
+}
+
+.atom-line-a {
+  top: 18%;
+  left: 16%;
+  transform: rotate(22deg);
+}
+
+.atom-line-b {
+  top: 38%;
+  right: 8%;
+  transform: rotate(-31deg);
+  animation-delay: -1.5s;
+}
+
+.atom-line-c {
+  bottom: 22%;
+  left: 40%;
+  transform: rotate(12deg);
+  animation-delay: -2.5s;
+}
+
+.atom-dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--atom-dot);
+  border-radius: 9999px;
+  box-shadow: 0 0 18px var(--atom-dot);
+  animation: atom-float 2.4s ease-in-out infinite alternate;
+}
+
+.atom-dot-a {
+  top: 15%;
+  left: 24%;
+}
+
+.atom-dot-b {
+  top: 30%;
+  right: 15%;
+  animation-delay: -0.6s;
+}
+
+.atom-dot-c {
+  bottom: 24%;
+  left: 13%;
+  animation-delay: -1.2s;
+}
+
+.atom-dot-d {
+  bottom: 32%;
+  right: 31%;
+  animation-delay: -1.6s;
+}
+
+.trading-insight-slide {
+  animation: insight-slide-in 420ms ease-out both;
+}
+
+@keyframes atom-drift {
+  from {
+    transform: translate3d(0, 0, 0) rotate(-16deg) scale(1);
+  }
+  to {
+    transform: translate3d(2.75rem, -1.75rem, 0) rotate(-4deg) scale(1.06);
+  }
+}
+
+@keyframes atom-breathe {
+  from {
+    opacity: 0.2;
+  }
+  to {
+    opacity: 0.55;
+  }
+}
+
+@keyframes atom-float {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(2rem, -2.4rem, 0);
+  }
+}
+
+@keyframes insight-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atom-field::before,
+  .atom-field::after,
+  .atom-line,
+  .atom-dot,
+  .trading-insight-slide {
+    animation: none;
+  }
+}
+
+/* Light-mode overrides for existing dark utility classes in the MVP shell. */
+:root[data-theme="light"] .prop-app .text-white,
+:root[data-theme="light"] .prop-app .text-slate-100,
+:root[data-theme="light"] .prop-app .text-slate-300 {
+  color: var(--text-primary) !important;
+}
+
+:root[data-theme="light"] .prop-app .text-slate-400,
+:root[data-theme="light"] .prop-app .text-slate-500,
+:root[data-theme="light"] .prop-app .text-slate-600 {
+  color: var(--text-muted) !important;
+}
+
+:root[data-theme="light"] .prop-app .bg-slate-950\/95,
+:root[data-theme="light"] .prop-app .bg-slate-950\/90,
+:root[data-theme="light"] .prop-app .bg-slate-950\/80,
+:root[data-theme="light"] .prop-app .bg-slate-950\/75,
+:root[data-theme="light"] .prop-app .bg-slate-950\/60,
+:root[data-theme="light"] .prop-app .bg-slate-950\/45,
+:root[data-theme="light"] .prop-app .bg-slate-900\/70 {
+  background-color: var(--surface) !important;
+}
+
+:root[data-theme="light"] .prop-app .border-slate-800,
+:root[data-theme="light"] .prop-app .border-slate-800\/70,
+:root[data-theme="light"] .prop-app .border-slate-800\/80,
+:root[data-theme="light"] .prop-app .border-slate-800\/90,
+:root[data-theme="light"] .prop-app .border-slate-700,
+:root[data-theme="light"] .prop-app .border-slate-700\/80 {
+  border-color: var(--border-soft) !important;
+}
+
+:root[data-theme="light"] .prop-app .shadow-black\/20,
+:root[data-theme="light"] .prop-app .shadow-black\/30 {
+  --tw-shadow-color: rgba(15, 23, 42, 0.12) !important;
+}
+
+:root[data-theme="light"] .prop-app .text-cyan-300,
+:root[data-theme="light"] .prop-app .text-cyan-300\/80,
+:root[data-theme="light"] .prop-app .text-cyan-200,
+:root[data-theme="light"] .prop-app .text-blue-200,
+:root[data-theme="light"] .prop-app .text-violet-300 {
+  color: #1f2937 !important;
+}
+
+:root[data-theme="light"] .prop-app .border-cyan-400\/20,
+:root[data-theme="light"] .prop-app .border-cyan-400\/30,
+:root[data-theme="light"] .prop-app .border-cyan-400\/40,
+:root[data-theme="light"] .prop-app .border-blue-400\/40 {
+  border-color: rgba(31, 41, 55, 0.35) !important;
+}
+
+:root[data-theme="light"] .prop-app .bg-cyan-400\/10,
+:root[data-theme="light"] .prop-app .bg-blue-500\/15,
+:root[data-theme="light"] .prop-app .bg-violet-500\/15 {
+  background-color: rgba(31, 41, 55, 0.06) !important;
+}
+
+:root[data-theme="light"] .prop-app .hover\:bg-cyan-400\/10:hover,
+:root[data-theme="light"] .prop-app .hover\:bg-blue-500\/25:hover,
+:root[data-theme="light"] .prop-app .hover\:bg-slate-900\/80:hover,
+:root[data-theme="light"] .prop-app .hover\:bg-slate-900\/50:hover {
+  background-color: rgba(31, 41, 55, 0.08) !important;
+}
+
+:root[data-theme="light"] .prop-app .hover\:border-cyan-400\/50:hover,
+:root[data-theme="light"] .prop-app .hover\:border-blue-300\/70:hover,
+:root[data-theme="light"] .prop-app .hover\:border-slate-800:hover {
+  border-color: rgba(17, 24, 39, 0.55) !important;
+}
+
+:root[data-theme="light"] .prop-app svg {
+  color: #374151;
+}
+
+:root[data-theme="light"] .prop-app .bg-cyan-400.text-slate-950,
+:root[data-theme="light"] .prop-app .bg-cyan-400 .text-slate-950 {
+  background-color: #111827 !important;
+  color: #ffffff !important;
+}
+
+:root[data-theme="light"] .prop-app .bg-blue-500.text-white,
+:root[data-theme="light"] .prop-app .bg-violet-500.text-white,
+:root[data-theme="light"] .prop-app .bg-gradient-to-r.text-white {
+  color: #ffffff !important;
+}
+
+:root[data-theme="light"] .prop-app .share-card-preview .text-white,
+:root[data-theme="light"] .prop-app .share-card-preview .text-slate-100,
+:root[data-theme="light"] .prop-app .share-card-preview .font-semibold {
+  color: #f8fafc !important;
+}
+
+:root[data-theme="light"] .prop-app .share-card-preview .text-slate-400,
+:root[data-theme="light"] .prop-app .share-card-preview .text-slate-500 {
+  color: #94a3b8 !important;
 }
