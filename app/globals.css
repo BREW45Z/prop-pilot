@@ -332,13 +332,46 @@ body {
   color: #ffffff !important;
 }
 
+:root[data-theme="light"] .drawdown-amount {
+  color: #111827 !important;
+}
+
+:root[data-theme="light"] .prop-app .share-card-preview {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #111827 !important;
+}
+
 :root[data-theme="light"] .prop-app .share-card-preview .text-white,
 :root[data-theme="light"] .prop-app .share-card-preview .text-slate-100,
-:root[data-theme="light"] .prop-app .share-card-preview .font-semibold {
-  color: #f8fafc !important;
+:root[data-theme="light"] .prop-app .share-card-preview .font-semibold,
+:root[data-theme="light"] .prop-app .share-card-preview .share-card-value,
+:root[data-theme="light"] .prop-app .share-card-preview .text-cyan-300,
+:root[data-theme="light"] .prop-app .share-card-preview .text-cyan-200 {
+  color: #111827 !important;
 }
 
 :root[data-theme="light"] .prop-app .share-card-preview .text-slate-400,
 :root[data-theme="light"] .prop-app .share-card-preview .text-slate-500 {
-  color: #94a3b8 !important;
+  color: #475569 !important;
+}
+
+:root[data-theme="light"] .prop-app .share-card-preview .share-card-watermark {
+  color: rgba(15, 23, 42, 0.04) !important;
+}
+
+:root[data-theme="light"] .prop-app .share-card-preview .rounded-xl {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+}
+
+:root[data-theme="light"] .prop-app .share-card-preview .border-slate-800,
+:root[data-theme="light"] .prop-app .share-card-preview .border-b,
+:root[data-theme="light"] .prop-app .share-card-preview .border-cyan-400\/30 {
+  border-color: #cbd5e1 !important;
+}
+
+:root[data-theme="light"] .prop-app .share-card-preview .bg-slate-950\/60,
+:root[data-theme="light"] .prop-app .share-card-preview .bg-cyan-400\/10 {
+  background-color: #ffffff !important;
 }

@@ -92,7 +92,7 @@ export default function DailyDrawdownCalculator() {
   const remainingRoom = calculateRemainingDailyLossRoom(dailyLossLimit, dayPL);
   const remainingRoomAfterOpenRisk = calculateRemainingRoomAfterOpenRisk(
     remainingRoom,
-    tradeRisk
+    tradeRisk,
   );
 
   // Status and advice display values.
@@ -109,7 +109,7 @@ export default function DailyDrawdownCalculator() {
     remainingRoom <= 0
       ? "Daily Loss Limit Breached. Stop trading."
       : `${baseAdvice} You have $${remainingRoom.toFixed(
-          2
+          2,
         )} remaining before the daily loss limit.`;
 
   return (
@@ -162,7 +162,7 @@ export default function DailyDrawdownCalculator() {
               value={dailyLossPercent}
               onChange={(e) =>
                 setDailyLossPercent(
-                  keepPercentBetweenZeroAndHundred(e.target.value)
+                  keepPercentBetweenZeroAndHundred(e.target.value),
                 )
               }
             />
@@ -211,28 +211,22 @@ export default function DailyDrawdownCalculator() {
           </h3>
 
           <Card className={resultCard}>
-            <p className={resultLabel}>
-              Maximum Daily Loss Allowed
-            </p>
-            <h2 className="text-xl font-bold leading-none text-violet-300">
+            <p className={resultLabel}>Maximum Daily Loss Allowed</p>
+            <h2 className="drawdown-amount text-xl font-bold leading-none text-violet-300">
               ${dailyLossLimit.toFixed(2)}
             </h2>
           </Card>
 
           <Card className={resultCard}>
-            <p className={resultLabel}>
-              Loss Already Used Today
-            </p>
-            <h2 className="text-xl font-bold leading-none text-red-300">
+            <p className={resultLabel}>Loss Already Used Today</p>
+            <h2 className="drawdown-amount text-xl font-bold leading-none text-red-300">
               ${lossUsedToday.toFixed(2)}
             </h2>
           </Card>
 
           <Card className={safeResultCard}>
-            <p className={resultLabel}>
-              Remaining Loss Room
-            </p>
-            <h2 className={safeResultValue}>
+            <p className={resultLabel}>Remaining Loss Room</p>
+            <h2 className={`${safeResultValue} drawdown-amount`}>
               {remainingRoom <= 0
                 ? "Daily Loss Limit Breached"
                 : `$${remainingRoom.toFixed(2)}`}
@@ -240,10 +234,8 @@ export default function DailyDrawdownCalculator() {
           </Card>
 
           <Card className={safeResultCard}>
-            <p className={resultLabel}>
-              Remaining Room After Open Risk
-            </p>
-            <h2 className={safeResultValue}>
+            <p className={resultLabel}>Remaining Room After Open Risk</p>
+            <h2 className={`${safeResultValue} drawdown-amount`}>
               ${remainingRoomAfterOpenRisk.toFixed(2)}
             </h2>
           </Card>
@@ -270,3 +262,4 @@ export default function DailyDrawdownCalculator() {
     </Card>
   );
 }
+git;

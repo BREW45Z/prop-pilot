@@ -88,26 +88,39 @@ const drawdownInsightMessages = {
     "One unnecessary trade can turn a bad day into a failed account.",
   ],
   Breached: [
-    "Trading should stop for today.",
-    "Preserve the account. Come back tomorrow with a fresh daily loss limit.",
-    "The challenge continues tomorrow. Don't let frustration turn one bad day into a failed account.",
-    "Stop trading. The goal now is to protect what is left.",
-    "No more risk today. Discipline means knowing when to stop.",
+    "Your daily loss limit has been breached. Before your next prop account, set your limits in Prop Pilot before placing the first trade.",
+    "The daily rule has been broken. Use this result as a reset point, not a reason to chase.",
+    "Stop here. On the next account, calculate daily risk before the first trade-not after the damage.",
+    "A prop challenge is protected one decision at a time. Build the risk plan before the next session.",
   ],
 };
 
 type DrawdownInsightStatus = keyof typeof drawdownInsightMessages;
 
 function FieldLabel({ helpText, label }: { helpText: string; label: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <span className="flex items-center gap-1.5">
+    <span className="relative flex items-center gap-1.5">
       <span>{label}</span>
-      <span
-        className="cursor-help text-[11px] font-bold text-cyan-300/80"
-        title={helpText}
+      <button
+        className="inline-grid size-4 place-items-center rounded-full border border-[var(--border-soft)] text-[10px] font-bold text-[var(--text-muted)] outline-none transition hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] focus:border-[var(--accent)] focus:text-[var(--text-primary)]"
+        type="button"
+        aria-expanded={isOpen}
+        aria-label={`${label}: ${helpText}`}
+        onBlur={() => setIsOpen(false)}
+        onClick={(event) => {
+          event.preventDefault();
+          setIsOpen((currentValue) => !currentValue);
+        }}
       >
         ⓘ
-      </span>
+      </button>
+      {isOpen && (
+        <span className="absolute left-0 top-6 z-50 w-64 max-w-[calc(100vw-2rem)] rounded-lg border border-[var(--border-soft)] bg-[var(--surface-strong)] px-3 py-2 text-left text-xs font-medium leading-5 text-[var(--text-primary)] shadow-2xl shadow-black/20">
+          {helpText}
+        </span>
+      )}
     </span>
   );
 }
@@ -252,13 +265,13 @@ export default function PropPilotWizard() {
   const hasLoadedTheme = useRef(false);
 
   // Risk Calculator form state.
-  const [accountSize, setAccountSize] = useState("");
+  const [accountSize, setAccountSize] = useState("50000");
   const [riskPercent, setRiskPercent] = useState("1");
   const [stopLoss, setStopLoss] = useState("");
   const [dollarValuePerPip, setDollarValuePerPip] = useState("10");
 
   // Daily Drawdown form state.
-  const [startOfDayBalance, setStartOfDayBalance] = useState("");
+  const [startOfDayBalance, setStartOfDayBalance] = useState("50000");
   const [dailyLossPercent, setDailyLossPercent] = useState("5");
   const [currentDayPL, setCurrentDayPL] = useState("");
   const [openTradeRisk, setOpenTradeRisk] = useState("");
@@ -547,6 +560,10 @@ export default function PropPilotWizard() {
     return `$${value.toFixed(2)}`;
   }
 
+  function formatWholeCurrency(value: number) {
+    return formatSummaryCurrency(value, 0);
+  }
+
   function formatSummaryCurrency(value: number, fractionDigits = 2) {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -775,7 +792,7 @@ Calculated with Prop Pilot`;
 
             <div className="mt-6 grid gap-1.5 border-t border-slate-800/70 pt-5">
               <p className="mb-1 px-2 text-[11px] font-bold uppercase tracking-wide text-slate-500">
-                Later
+                Coming Soon
               </p>
               {futureTools.map(({ label, Icon }) => (
                 <p
@@ -905,9 +922,9 @@ Calculated with Prop Pilot`;
                           </label>
 
                           <div className={metricCard}>
-                            <p className={metricLabel}>Current Value</p>
+                            <p className={metricLabel}>Account Balance</p>
                             <p className="mt-1 text-xl font-bold text-white">
-                              {formatCurrency(account)}
+                              {formatWholeCurrency(account)}
                             </p>
                           </div>
                         </div>
@@ -1141,9 +1158,9 @@ Calculated with Prop Pilot`;
                           </label>
 
                           <div className={metricCard}>
-                            <p className={metricLabel}>Current Value</p>
+                            <p className={metricLabel}>Start-of-Day Balance</p>
                             <p className="mt-1 text-xl font-bold text-white">
-                              {formatCurrency(dayBalance)}
+                              {formatWholeCurrency(dayBalance)}
                             </p>
                           </div>
                         </div>
@@ -1189,7 +1206,7 @@ Calculated with Prop Pilot`;
 
                           <div className={metricCard}>
                             <p className={metricLabel}>Max Daily Loss</p>
-                            <p className="mt-1 text-xl font-bold text-white">
+                            <p className="drawdown-amount mt-1 text-xl font-bold text-white">
                               {formatCurrency(dailyLossLimit)}
                             </p>
                             <p className="mt-1 text-xs text-slate-500">
@@ -1300,7 +1317,7 @@ Calculated with Prop Pilot`;
                               />
                             </p>
                             <p
-                              className={`mt-1 text-3xl font-bold leading-none ${remainingRoomColor}`}
+                              className={`drawdown-amount mt-1 text-3xl font-bold leading-none ${remainingRoomColor}`}
                             >
                               {remainingRoom <= 0
                                 ? "Breached"
@@ -1330,7 +1347,7 @@ Calculated with Prop Pilot`;
 
                           <div className={metricCard}>
                             <p className={metricLabel}>Loss Used Today</p>
-                            <p className="mt-1 text-xl font-bold text-red-300">
+                            <p className="drawdown-amount mt-1 text-xl font-bold text-red-300">
                               {formatCurrency(lossUsedToday)}
                             </p>
                             <p className="mt-1 text-xs text-slate-500">
@@ -1342,11 +1359,11 @@ Calculated with Prop Pilot`;
                             <p className={metricLabel}>
                               <FieldLabel
                                 label="After Open Risk"
-                                helpText="The remaining room after subtracting current open trade risk."
+                                helpText="The remaining room after subtracting current open-trade risk."
                               />
                             </p>
                             <p
-                              className={`mt-1 text-xl font-bold ${remainingAfterRiskColor}`}
+                              className={`drawdown-amount mt-1 text-xl font-bold ${remainingAfterRiskColor}`}
                             >
                               {formatCurrency(remainingAfterOpenRisk)}
                             </p>
@@ -1461,7 +1478,7 @@ Calculated with Prop Pilot`;
               ref={shareCardRef}
               className="share-card-preview relative overflow-hidden rounded-2xl border border-slate-800 bg-[#07111f] p-5 text-slate-100"
             >
-              <p className="pointer-events-none absolute right-4 top-4 text-4xl font-black uppercase tracking-widest text-white/[0.03]">
+              <p className="share-card-watermark pointer-events-none absolute right-4 top-4 text-4xl font-black uppercase tracking-widest text-white/[0.03]">
                 PROP PILOT
               </p>
 
@@ -1579,7 +1596,7 @@ Calculated with Prop Pilot`;
                             Remaining Room
                           </p>
                           <p
-                            className={`mt-1 text-lg font-bold ${remainingRoomColor}`}
+                            className={`share-card-value mt-1 text-lg font-bold ${remainingRoomColor}`}
                           >
                             {formatCurrency(remainingRoom)}
                           </p>
@@ -1590,7 +1607,7 @@ Calculated with Prop Pilot`;
                             After Open Risk
                           </p>
                           <p
-                            className={`mt-1 text-lg font-bold ${remainingAfterRiskColor}`}
+                            className={`share-card-value mt-1 text-lg font-bold ${remainingAfterRiskColor}`}
                           >
                             {formatCurrency(remainingAfterOpenRisk)}
                           </p>
