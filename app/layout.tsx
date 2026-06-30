@@ -11,6 +11,19 @@ export const metadata: Metadata = {
   title: "Prop Pilot",
   description:
     "A simple risk and drawdown toolkit for disciplined prop traders.",
+  icons: {
+    icon: "/brand/prop_pilot_approved_dual_mode_asset_pack/favicon-64-dark.png",
+    apple:
+      "/brand/prop_pilot_approved_dual_mode_asset_pack/apple-touch-icon-light.png",
+  },
+  openGraph: {
+    title: "Prop Pilot",
+    description:
+      "A simple risk and drawdown toolkit for disciplined prop traders.",
+    images: [
+      "/brand/prop_pilot_approved_dual_mode_asset_pack/og-image-dark.png",
+    ],
+  },
 };
 
 export default function RootLayout({

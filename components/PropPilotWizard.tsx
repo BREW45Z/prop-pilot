@@ -12,7 +12,6 @@ import {
 import { toPng } from "html-to-image";
 import {
   Activity,
-  BarChart3,
   BookOpen,
   Calculator,
   ClipboardList,
@@ -21,6 +20,7 @@ import {
   Sun,
   TrendingDown,
 } from "lucide-react";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 type ActiveTool = "risk" | "drawdown";
@@ -47,6 +47,25 @@ const storageKeys = {
   riskCalculator: "propPilot.riskCalculator",
   dailyDrawdown: "propPilot.dailyDrawdown",
   theme: "propPilot.theme",
+};
+
+const brandAssets = {
+  logoMarkDark:
+    "/brand/prop_pilot_approved_dual_mode_asset_pack/logo-mark-dark-transparent.png",
+  logoMarkLight:
+    "/brand/prop_pilot_approved_dual_mode_asset_pack/logo-mark-light.png",
+  wordmarkDark:
+    "/brand/transparent-prop_pilot_transparent_logo_pack/prop-pilot-horizontal-dark-transparent.png",
+  wordmarkLight:
+    "/brand/transparent-prop_pilot_transparent_logo_pack/prop-pilot-horizontal-light-black-text-transparent.png",
+  landingHorizontalDark:
+    "/brand/transparent-prop_pilot_transparent_logo_pack/prop-pilot-horizontal-dark-transparent.png",
+  landingHorizontalLight:
+    "/brand/transparent-prop_pilot_transparent_logo_pack/prop-pilot-horizontal-light-black-text-transparent.png",
+  socialAvatarDark:
+    "/brand/prop_pilot_approved_dual_mode_asset_pack/social-avatar-dark.png",
+  socialAvatarLight:
+    "/brand/prop_pilot_approved_dual_mode_asset_pack/social-avatar-light.png",
 };
 
 // Wizard step labels.
@@ -226,19 +245,43 @@ function ThemeToggle({
   );
 }
 
-function BrandMark() {
+function BrandMark({
+  theme,
+  variant = "wordmark",
+}: {
+  theme: ThemeMode;
+  variant?: "avatar" | "landing" | "wordmark";
+}) {
+  const isLanding = variant === "landing";
+  const isAvatar = variant === "avatar";
+  const logoSrc = isLanding
+    ? theme === "dark"
+      ? brandAssets.landingHorizontalDark
+      : brandAssets.landingHorizontalLight
+    : isAvatar
+      ? theme === "dark"
+        ? brandAssets.socialAvatarDark
+        : brandAssets.socialAvatarLight
+      : theme === "dark"
+        ? brandAssets.wordmarkDark
+        : brandAssets.wordmarkLight;
+
   return (
-    <div className="flex items-center gap-3">
-      <div className="grid size-10 place-items-center rounded-xl border border-cyan-400/30 bg-cyan-400/10 text-cyan-300 shadow-lg shadow-cyan-500/10">
-        <BarChart3 className="size-6" />
-      </div>
-      <div>
-        <p className="text-sm font-black uppercase tracking-[0.28em] text-[var(--text-primary)]">
-          Prop Pilot
-        </p>
-        <p className="text-xs text-[var(--text-muted)]">Trader toolkit</p>
-      </div>
-    </div>
+    <Image
+      alt="Prop Pilot"
+      className={
+        isLanding
+          ? "h-[3.35rem] w-auto object-contain sm:h-[4.5rem] lg:h-[5.6rem]"
+          : isAvatar
+            ? "size-20 object-contain"
+            : "h-[3.9rem] w-auto object-contain"
+      }
+      height={isLanding ? 179 : isAvatar ? 160 : 125}
+      priority
+      src={logoSrc}
+      unoptimized
+      width={isLanding ? 597 : isAvatar ? 160 : 416}
+    />
   );
 }
 
@@ -666,7 +709,7 @@ Calculated with Prop Pilot`;
       {!hasStarted ? (
         <div className="relative z-10 grid min-h-screen content-between px-5 py-7 sm:px-8 lg:px-10">
           <header className="flex items-center justify-between gap-4">
-            <BrandMark />
+            <BrandMark theme={theme} variant="landing" />
             <ThemeToggle theme={theme} onToggle={toggleTheme} />
           </header>
 
@@ -740,15 +783,7 @@ Calculated with Prop Pilot`;
         <div className="relative z-10 min-h-screen md:grid md:h-screen md:grid-cols-[15rem_minmax(0,1fr)]">
         <aside className="flex border-b border-[var(--border-soft)] bg-[var(--surface)] p-4 shadow-2xl shadow-black/20 backdrop-blur md:h-screen md:flex-col md:border-b-0 md:border-r">
           <div className="w-full">
-            <div className="flex items-center gap-3">
-              <div className="grid size-10 place-items-center rounded-xl border border-cyan-400/20 bg-cyan-400/10 text-cyan-300 shadow-lg shadow-cyan-500/10">
-                <BarChart3 className="size-6" />
-              </div>
-              <div>
-                <p className="text-base font-bold text-white">Prop Pilot</p>
-                <p className="text-xs text-slate-500">Trader toolkit</p>
-              </div>
-            </div>
+            <BrandMark theme={theme} />
 
             <button
               className="mt-5 inline-flex w-full items-center justify-center rounded-xl border border-[var(--border-soft)] bg-[var(--surface-muted)] px-3 py-2 text-xs font-bold text-[var(--text-soft)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
@@ -811,7 +846,7 @@ Calculated with Prop Pilot`;
             <p>Built for prop traders who want to avoid rule breaches.</p>
             <a
               className="mt-3 inline-flex w-full items-center justify-center rounded-xl border border-blue-400/40 bg-blue-500/15 px-3 py-2 text-xs font-bold text-blue-200 shadow-lg shadow-blue-500/10 transition hover:border-blue-300/70 hover:bg-blue-500/25 hover:text-white"
-              href="mailto:your-email@example.com"
+              href="mailto:feedback@apropilot.com"
             >
               Send feedback
             </a>
@@ -1456,17 +1491,19 @@ Calculated with Prop Pilot`;
             onClick={closeShareCard}
           />
 
-          <div className="relative z-10 w-full max-w-xl rounded-2xl border border-slate-800 bg-slate-950 p-4 shadow-2xl shadow-black/60">
+          <div className="relative z-10 w-full max-w-xl rounded-2xl border border-[var(--border-soft)] bg-[var(--surface)] p-4 shadow-2xl shadow-black/30">
             <div className="mb-3 flex items-center justify-between gap-3">
               <div>
-                <p className="text-sm font-bold text-white">Share Card</p>
-                <p className="text-xs text-slate-500">
+                <p className="text-sm font-bold text-[var(--text-primary)]">
+                  Share Card
+                </p>
+                <p className="text-xs text-[var(--text-muted)]">
                   Download exactly this branded report preview.
                 </p>
               </div>
 
               <button
-                className="rounded-lg border border-slate-800 px-2.5 py-1.5 text-xs font-bold text-slate-400 transition hover:border-slate-600 hover:bg-slate-900 hover:text-white"
+                className="rounded-lg border border-[var(--border-soft)] px-2.5 py-1.5 text-xs font-bold text-[var(--text-muted)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-muted)] hover:text-[var(--text-primary)]"
                 type="button"
                 onClick={closeShareCard}
               >
@@ -1478,14 +1515,35 @@ Calculated with Prop Pilot`;
               ref={shareCardRef}
               className="share-card-preview relative overflow-hidden rounded-2xl border border-slate-800 bg-[#07111f] p-5 text-slate-100"
             >
-              <p className="share-card-watermark pointer-events-none absolute right-4 top-4 text-4xl font-black uppercase tracking-widest text-white/[0.03]">
-                PROP PILOT
-              </p>
+              <Image
+                alt=""
+                aria-hidden="true"
+                className="pointer-events-none absolute right-20 top-14 size-72 object-contain opacity-[0.055]"
+                height={576}
+                src={
+                  theme === "dark"
+                    ? brandAssets.socialAvatarDark
+                    : brandAssets.socialAvatarLight
+                }
+                unoptimized
+                width={576}
+              />
 
               <div className="relative">
-                <p className="text-xs font-bold uppercase tracking-[0.3em] text-cyan-300">
-                  Prop Pilot
-                </p>
+                <div className="flex items-center">
+                  <Image
+                    alt="Prop Pilot"
+                    className="size-14 object-contain"
+                    height={112}
+                    src={
+                      theme === "dark"
+                        ? brandAssets.socialAvatarDark
+                        : brandAssets.socialAvatarLight
+                    }
+                    unoptimized
+                    width={112}
+                  />
+                </div>
 
                 <h2 className="mt-4 text-xl font-bold text-white">
                   {shareCardType === "risk"
@@ -1636,7 +1694,7 @@ Calculated with Prop Pilot`;
 
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-[var(--text-muted)]">
                   Export a clean PNG for sharing.
                 </p>
                 {downloadError && (
