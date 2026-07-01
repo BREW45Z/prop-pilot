@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { Geist } from "next/font/google";
 import "./globals.css";
 
@@ -33,7 +34,10 @@ export default function RootLayout({
 }) {
   return (
     <html className={geist.variable} lang="en" suppressHydrationWarning>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
