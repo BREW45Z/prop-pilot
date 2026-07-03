@@ -8,7 +8,7 @@ export const appHeader =
 
 // Header and navigation patterns.
 export const logoMark =
-  "grid size-9 place-items-center rounded-lg border border-blue-500/30 bg-blue-500/10 text-blue-300 shadow-lg shadow-blue-950/20";
+  "grid size-9 place-items-center rounded-lg border border-cyan-400/30 bg-cyan-400/10 text-cyan-300 shadow-lg shadow-cyan-500/10";
 
 export const navShell =
   "flex rounded-lg border border-slate-800 bg-slate-950/60 p-1 text-sm font-semibold text-slate-400";
@@ -27,10 +27,10 @@ export const calculatorHeader = "space-y-1 text-left";
 export const titleRow = "flex items-center gap-3";
 
 export const iconBadge =
-  "grid size-9 shrink-0 place-items-center rounded-lg border border-blue-500/30 bg-blue-500/10 text-blue-300";
+  "grid size-9 shrink-0 place-items-center rounded-lg border border-cyan-400/30 bg-cyan-400/10 text-cyan-300";
 
-export const iconBadgePurple =
-  "grid size-9 shrink-0 place-items-center rounded-lg border border-violet-500/30 bg-violet-500/10 text-violet-300";
+export const iconBadgeSecondary =
+  "grid size-9 shrink-0 place-items-center rounded-lg border border-cyan-400/30 bg-cyan-400/10 text-cyan-300";
 
 export const calculatorContent = "grid gap-4 pt-4";
 
@@ -57,7 +57,7 @@ export const resultCard =
   "rounded-lg border-slate-700/80 bg-slate-950/80 p-3 shadow-none";
 
 export const primaryResultCard =
-  "rounded-lg border-blue-500/30 bg-blue-500/10 p-3 shadow-none";
+  "rounded-lg border-cyan-400/30 bg-cyan-400/10 p-3 shadow-none";
 
 export const safeResultCard =
   "rounded-lg border-emerald-500/30 bg-emerald-500/10 p-3 shadow-none";
@@ -66,7 +66,7 @@ export const resultLabel = "mb-2 text-sm font-medium text-slate-400";
 
 export const resultValue = "text-xl font-bold leading-none text-slate-100";
 
-export const primaryResultValue = "text-2xl font-bold leading-none text-blue-300";
+export const primaryResultValue = "text-2xl font-bold leading-none text-cyan-300";
 
 export const safeResultValue = "text-xl font-bold leading-tight text-emerald-300";
 

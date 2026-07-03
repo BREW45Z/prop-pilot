@@ -14,10 +14,10 @@
   --text-muted: #94a3b8;
   --text-faint: #64748b;
   --accent: #22d3ee;
-  --accent-strong: #7c3aed;
+  --accent-strong: #06b6d4;
   --accent-ring: rgba(34, 211, 238, 0.18);
   --atom-primary: rgba(34, 211, 238, 0.38);
-  --atom-secondary: rgba(124, 58, 237, 0.34);
+  --atom-secondary: rgba(6, 182, 212, 0.24);
   --atom-dot: rgba(96, 165, 250, 0.8);
 }
 
@@ -32,9 +32,9 @@
   --text-soft: #334155;
   --text-muted: #64748b;
   --text-faint: #94a3b8;
-  --accent: #2563eb;
-  --accent-strong: #7c3aed;
-  --accent-ring: rgba(37, 99, 235, 0.18);
+  --accent: #0891b2;
+  --accent-strong: #06b6d4;
+  --accent-ring: rgba(8, 145, 178, 0.18);
   --atom-primary: rgba(15, 23, 42, 0.14);
   --atom-secondary: rgba(30, 41, 59, 0.12);
   --atom-dot: rgba(15, 23, 42, 0.32);
@@ -100,7 +100,7 @@ body {
     radial-gradient(circle, var(--atom-dot) 0 1.2px, transparent 1.4px) 0 0 / 7rem 7rem,
     radial-gradient(circle at 20% 20%, var(--atom-secondary), transparent 26rem),
     radial-gradient(circle at 78% 18%, var(--atom-primary), transparent 24rem),
-    radial-gradient(circle at 50% 84%, rgba(37, 99, 235, 0.1), transparent 28rem);
+    radial-gradient(circle at 50% 84%, rgba(34, 211, 238, 0.1), transparent 28rem);
   opacity: 0.95;
 }
 
@@ -285,33 +285,30 @@ body {
 :root[data-theme="light"] .prop-app .text-cyan-300,
 :root[data-theme="light"] .prop-app .text-cyan-300\/80,
 :root[data-theme="light"] .prop-app .text-cyan-200,
-:root[data-theme="light"] .prop-app .text-blue-200,
-:root[data-theme="light"] .prop-app .text-violet-300 {
+:root[data-theme="light"] .prop-app .text-cyan-400 {
   color: #1f2937 !important;
 }
 
 :root[data-theme="light"] .prop-app .border-cyan-400\/20,
 :root[data-theme="light"] .prop-app .border-cyan-400\/30,
-:root[data-theme="light"] .prop-app .border-cyan-400\/40,
-:root[data-theme="light"] .prop-app .border-blue-400\/40 {
+:root[data-theme="light"] .prop-app .border-cyan-400\/40 {
   border-color: rgba(31, 41, 55, 0.35) !important;
 }
 
 :root[data-theme="light"] .prop-app .bg-cyan-400\/10,
-:root[data-theme="light"] .prop-app .bg-blue-500\/15,
-:root[data-theme="light"] .prop-app .bg-violet-500\/15 {
+:root[data-theme="light"] .prop-app .bg-cyan-400\/15 {
   background-color: rgba(31, 41, 55, 0.06) !important;
 }
 
 :root[data-theme="light"] .prop-app .hover\:bg-cyan-400\/10:hover,
-:root[data-theme="light"] .prop-app .hover\:bg-blue-500\/25:hover,
+:root[data-theme="light"] .prop-app .hover\:bg-cyan-400\/25:hover,
 :root[data-theme="light"] .prop-app .hover\:bg-slate-900\/80:hover,
 :root[data-theme="light"] .prop-app .hover\:bg-slate-900\/50:hover {
   background-color: rgba(31, 41, 55, 0.08) !important;
 }
 
 :root[data-theme="light"] .prop-app .hover\:border-cyan-400\/50:hover,
-:root[data-theme="light"] .prop-app .hover\:border-blue-300\/70:hover,
+:root[data-theme="light"] .prop-app .hover\:border-cyan-300\/70:hover,
 :root[data-theme="light"] .prop-app .hover\:border-slate-800:hover {
   border-color: rgba(17, 24, 39, 0.55) !important;
 }
@@ -326,8 +323,6 @@ body {
   color: #ffffff !important;
 }
 
-:root[data-theme="light"] .prop-app .bg-blue-500.text-white,
-:root[data-theme="light"] .prop-app .bg-violet-500.text-white,
 :root[data-theme="light"] .prop-app .bg-gradient-to-r.text-white {
   color: #ffffff !important;
 }

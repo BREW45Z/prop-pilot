@@ -26,7 +26,7 @@ import {
   fieldGroup,
   fieldIcon,
   fieldLabel,
-  iconBadgePurple,
+  iconBadgeSecondary,
   inputGrid,
   resultCard,
   resultLabel,
@@ -116,7 +116,7 @@ export default function DailyDrawdownCalculator() {
     <Card className={calculatorCard}>
       <CardHeader className={calculatorHeader}>
         <div className={titleRow}>
-          <span className={iconBadgePurple}>
+          <span className={iconBadgeSecondary}>
             <BarChart3 className="size-5" />
           </span>
           <CardTitle>Daily Drawdown Calculator</CardTitle>
@@ -212,7 +212,7 @@ export default function DailyDrawdownCalculator() {
 
           <Card className={resultCard}>
             <p className={resultLabel}>Maximum Daily Loss Allowed</p>
-            <h2 className="drawdown-amount text-xl font-bold leading-none text-violet-300">
+            <h2 className="drawdown-amount text-xl font-bold leading-none text-cyan-300">
               ${dailyLossLimit.toFixed(2)}
             </h2>
           </Card>

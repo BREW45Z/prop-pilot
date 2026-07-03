@@ -235,7 +235,7 @@ function ThemeToggle({
       <span
         className={`grid size-7 place-items-center rounded-full transition ${
           isDark
-            ? "bg-violet-500 text-white shadow-lg shadow-violet-500/30"
+            ? "bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-500/25"
             : "bg-slate-900 text-white shadow-lg shadow-slate-900/20"
         }`}
       >
@@ -717,7 +717,7 @@ Calculated with Prop Pilot`;
             <div className="grid gap-4">
               <h1 className="mx-auto max-w-3xl text-4xl font-black tracking-tight text-[var(--text-primary)] sm:text-5xl">
                 Know your risk{" "}
-                <span className="text-violet-400">before</span> you place the
+                <span className="text-cyan-300">before</span> you place the
                 trade.
               </h1>
               <p className="mx-auto max-w-xl text-base leading-7 text-[var(--text-muted)]">
@@ -727,7 +727,7 @@ Calculated with Prop Pilot`;
             </div>
 
             <button
-              className="inline-flex min-w-60 items-center justify-center rounded-xl bg-gradient-to-r from-violet-500 to-blue-500 px-5 py-3 text-sm font-bold text-white shadow-2xl shadow-blue-500/20 transition hover:scale-[1.01] hover:from-violet-400 hover:to-blue-400"
+              className="inline-flex min-w-60 items-center justify-center rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-slate-950 shadow-2xl shadow-cyan-500/20 transition hover:scale-[1.01] hover:bg-cyan-300"
               type="button"
               onClick={() => setHasStarted(true)}
             >
@@ -757,7 +757,7 @@ Calculated with Prop Pilot`;
                   className="rounded-2xl border border-[var(--border-soft)] bg-[var(--surface)] p-5 text-left shadow-xl shadow-black/10 backdrop-blur"
                   key={title}
                 >
-                  <div className="mb-4 grid size-10 place-items-center rounded-full bg-violet-500/15 text-violet-300">
+                  <div className="mb-4 grid size-10 place-items-center rounded-full bg-cyan-400/10 text-cyan-300">
                     <Icon className="size-5" />
                   </div>
                   <p className="text-sm font-bold text-[var(--text-primary)]">
@@ -845,8 +845,8 @@ Calculated with Prop Pilot`;
             <p>© 2026 Prop Pilot</p>
             <p>Built for prop traders who want to avoid rule breaches.</p>
             <a
-              className="mt-3 inline-flex w-full items-center justify-center rounded-xl border border-blue-400/40 bg-blue-500/15 px-3 py-2 text-xs font-bold text-blue-200 shadow-lg shadow-blue-500/10 transition hover:border-blue-300/70 hover:bg-blue-500/25 hover:text-white"
-              href="mailto:feedback@apropilot.com"
+              className="mt-3 inline-flex w-full items-center justify-center rounded-xl border border-cyan-400/40 bg-cyan-400/10 px-3 py-2 text-xs font-bold text-cyan-200 shadow-lg shadow-cyan-500/10 transition hover:border-cyan-300/70 hover:bg-cyan-400/25 hover:text-white"
+              href="https://docs.google.com/forms/d/e/1FAIpQLSf2UXRARjN0FhNlzAAv3sNvXLcUpUTm3GzGA8Y_nUik7rCbOg/viewform?usp=header"
             >
               Send feedback
             </a>
@@ -1705,7 +1705,7 @@ Calculated with Prop Pilot`;
               </div>
 
               <button
-                className="ml-auto rounded-xl bg-blue-500 px-4 py-2 text-sm font-bold text-white shadow-lg shadow-blue-500/20 transition hover:bg-blue-400"
+                className="ml-auto rounded-xl bg-cyan-400 px-4 py-2 text-sm font-bold text-slate-950 shadow-lg shadow-cyan-500/20 transition hover:bg-cyan-300"
                 type="button"
                 onClick={downloadShareCard}
               >
