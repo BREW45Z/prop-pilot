@@ -12,7 +12,9 @@ const title = "Prop Pilot";
 const description =
   "A simple risk and drawdown toolkit for disciplined prop traders.";
 const previewImage =
-  "/brand/prop_pilot_approved_dual_mode_asset_pack/og-image-prop-pilot-2026-07-02.png";
+  "/brand/prop_pilot_approved_dual_mode_asset_pack/og-image-dark.png";
+const previewImageLight =
+  "/brand/prop_pilot_approved_dual_mode_asset_pack/og-image-light.png";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://apropilot.com"),
@@ -31,6 +33,12 @@ export const metadata: Metadata = {
     images: [
       {
         url: previewImage,
+        width: 1200,
+        height: 630,
+        alt: "Prop Pilot",
+      },
+      {
+        url: previewImageLight,
         width: 1200,
         height: 630,
         alt: "Prop Pilot",
