@@ -20,6 +20,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://apropilot.com"),
   title,
   description,
+  manifest: "/manifest.webmanifest",
   icons: {
     icon: "/brand/prop_pilot_approved_dual_mode_asset_pack/favicon-64-dark.png",
     apple:

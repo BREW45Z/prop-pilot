@@ -22,6 +22,7 @@ import {
   TrendingDown,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 type ActiveTool = "risk" | "drawdown";
@@ -841,8 +842,26 @@ Calculated with Prop Pilot`;
             </p>
           </div>
 
-          <footer className="text-center text-xs text-[var(--text-faint)]">
-            Built for prop traders who want to avoid rule breaches.
+          <footer className="grid justify-items-center gap-2 pt-6 text-center">
+            <span className="h-px w-24 bg-[var(--border-soft)]" />
+            <p className="text-[11px] font-bold uppercase tracking-wide text-[var(--text-faint)]">
+              Tools
+            </p>
+            <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-[var(--text-muted)]">
+              <Link
+                href="/lot-size-calculator"
+                className="transition hover:text-cyan-300"
+              >
+                Lot Size
+              </Link>
+              <span className="text-[var(--text-faint)]">·</span>
+              <Link
+                href="/prop-firm-drawdown-calculator"
+                className="transition hover:text-cyan-300"
+              >
+                Daily Drawdown
+              </Link>
+            </p>
           </footer>
         </div>
       ) : (
