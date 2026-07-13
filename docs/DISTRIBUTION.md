@@ -153,6 +153,66 @@ Plan:
 Why it helps distribution: free, evergreen traffic from Google that grows while
 you sleep, aimed at people already looking for exactly this tool.
 
+#### 6.1.1 Implementation Plan (first page)
+
+Build one high-quality page first, get the pattern right, then repeat.
+
+**These are separate URLs on the same app/deploy — not a new app landing page
+and not separate hosting.** In Next.js App Router, each folder under `app/`
+with a `page.tsx` becomes a URL automatically, served by the existing Vercel
+deploy on the same domain.
+
+First target page:
+
+```txt
+Route:  /prop-firm-drawdown-calculator
+File:   app/prop-firm-drawdown-calculator/page.tsx
+Search: "prop firm drawdown calculator", "daily loss limit calculator"
+```
+
+Page structure (static, server-rendered for SEO):
+
+- H1 with the keyword + one-line subheading.
+- Primary CTA button linking into the app (`/`), styled like the existing
+  cyan "Start Calculating" button.
+- 2-3 explainer sections (H2s): what a daily drawdown limit is, how the
+  calculation works, why it matters for prop traders. This text is what Google
+  ranks and what helps first-time users.
+- Repeat CTA at the bottom.
+- Footer consistent with the app.
+
+Design consistency (must match the existing app):
+
+- Reuse theme tokens: `bg-[var(--app-bg)]`, `text-[var(--text-primary)]`,
+  `text-[var(--text-muted)]`, `border-[var(--border-soft)]`,
+  `bg-[var(--surface)]`.
+- Accent color: cyan family only (`text-cyan-300`, `bg-cyan-400`,
+  `text-slate-950` on cyan buttons). No purple/blue.
+- Geist font (inherited from root layout).
+- Headings: `font-black tracking-tight`, same scale as the landing hero.
+- Cards: `rounded-2xl border bg-[var(--surface)] p-5 backdrop-blur`.
+- Reuse the atom background look where appropriate.
+
+Note: the live theme toggle lives in the client wizard component. SEO pages are
+server-rendered and inherit the default (dark) theme + CSS variables. That is
+expected and fine; no toggle needed on the SEO page.
+
+Per-page metadata:
+
+- Each page exports its own `metadata` (title + description) targeting its
+  search phrase, plus canonical URL.
+- Add the new route to `app/sitemap.ts` via the existing `publicRoutes` array.
+
+Rules for this feature:
+
+- Static content only — no database, no backend, no new packages.
+- Do not modify calculator formulas or the app landing page.
+- Canonical URLs must stay on `https://apropilot.com`.
+- Keep the app landing screen lean; SEO content lives on its own routes.
+
+Rollout: build the page, verify tests + lint + type-check, review live, then
+commit. Repeat the pattern for additional search terms once the first works.
+
 ### 6.2 Shareable Result URLs
 
 Let a trader share a link that reopens the calculator pre-filled with their

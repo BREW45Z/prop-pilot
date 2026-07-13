@@ -8,6 +8,16 @@ const publicRoutes = [
     changeFrequency: "monthly",
     priority: 1,
   },
+  {
+    path: "/prop-firm-drawdown-calculator",
+    changeFrequency: "monthly",
+    priority: 0.8,
+  },
+  {
+    path: "/lot-size-calculator",
+    changeFrequency: "monthly",
+    priority: 0.8,
+  },
 ] satisfies Array<{
   path: string;
   changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
