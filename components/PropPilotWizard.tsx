@@ -853,7 +853,7 @@ Calculated with Prop Pilot`;
           </div>
         </aside>
 
-        <main className="relative min-h-0 px-4 pb-8 pt-20 md:h-screen md:min-w-0 md:overflow-hidden md:px-8 md:pt-32">
+        <main className="relative min-h-0 px-4 pb-8 pt-20 md:h-screen md:min-w-0 md:overflow-y-auto md:px-8 md:pt-32">
           <div className="absolute right-4 top-4 md:right-8 md:top-8">
             <ThemeToggle theme={theme} onToggle={toggleTheme} />
           </div>
@@ -1117,6 +1117,11 @@ Calculated with Prop Pilot`;
                             </p>
                             <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
                               Lots
+                            </p>
+                            <p className="mt-2 text-xs leading-5 text-slate-400">
+                              Risking {formatCurrency(riskAmount)} (
+                              {risk.toFixed(2)}%) on a {sl.toFixed(0)}-pip stop ={" "}
+                              {positionSize.toFixed(2)} lots.
                             </p>
                           </div>
                         </div>
@@ -1415,6 +1420,11 @@ Calculated with Prop Pilot`;
                               className={`mt-2 inline-flex rounded-full border px-3 py-1 text-xs font-bold ${statusColorClass}`}
                             >
                               {drawdownStatus}
+                            </p>
+                            <p className="mt-2 text-xs leading-5 text-slate-400">
+                              You&rsquo;ve used {formatCurrency(lossUsedToday)} of
+                              your {formatCurrency(dailyLossLimit)} daily limit
+                              &mdash; {formatCurrency(remainingRoom)} room left.
                             </p>
                           </div>
 

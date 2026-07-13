@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { Geist } from "next/font/google";
 import "./globals.css";
@@ -51,6 +51,15 @@ export const metadata: Metadata = {
     description,
     images: [previewImage],
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#050914" },
+    { media: "(prefers-color-scheme: light)", color: "#dfe4ec" },
+  ],
 };
 
 export default function RootLayout({
