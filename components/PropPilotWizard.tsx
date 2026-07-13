@@ -9,6 +9,7 @@ import {
   calculateRiskAmount,
   getDailyDrawdownStatus,
 } from "@/lib/calculations";
+import { buildShareQuery, parseShareLink } from "@/lib/shareLink";
 import { toPng } from "html-to-image";
 import {
   Activity,
@@ -298,6 +299,7 @@ export default function PropPilotWizard() {
   const [copiedSummary, setCopiedSummary] = useState<CopiedSummary>(null);
   const [copyFailedSummary, setCopyFailedSummary] =
     useState<CopiedSummary>(null);
+  const [copiedLink, setCopiedLink] = useState<CopiedSummary>(null);
   const [shareCardType, setShareCardType] = useState<ActiveTool | null>(null);
   const [downloadError, setDownloadError] = useState("");
   const [drawdownInsight, setDrawdownInsight] = useState(
@@ -401,6 +403,42 @@ export default function PropPilotWizard() {
     }, 0);
 
     return () => window.clearTimeout(loadSavedValues);
+  }, []);
+
+  // Apply share-link values from the URL after saved values load.
+  // A shared link should override saved values so the recipient sees the
+  // sender's exact numbers. Malformed params are ignored.
+  useEffect(() => {
+    const applyShareLink = window.setTimeout(() => {
+      const shared = parseShareLink(window.location.search);
+
+      if (shared.tool !== null) {
+        setActiveTool(shared.tool);
+      }
+
+      if (shared.account !== null) setAccountSize(shared.account);
+      if (shared.risk !== null) setRiskPercent(shared.risk);
+      if (shared.sl !== null) setStopLoss(shared.sl);
+      if (shared.pip !== null) setDollarValuePerPip(shared.pip);
+
+      if (shared.balance !== null) setStartOfDayBalance(shared.balance);
+      if (shared.limit !== null) setDailyLossPercent(shared.limit);
+      if (shared.pl !== null) setCurrentDayPL(shared.pl);
+      if (shared.open !== null) setOpenTradeRisk(shared.open);
+
+      // A valid share link should land the recipient straight on the report:
+      // skip the landing page and jump to the last (results) step.
+      if (shared.tool !== null) {
+        setHasStarted(true);
+        if (shared.tool === "drawdown") {
+          setDrawdownStep(drawdownSteps.length - 1);
+        } else {
+          setRiskStep(riskSteps.length - 1);
+        }
+      }
+    }, 0);
+
+    return () => window.clearTimeout(applyShareLink);
   }, []);
 
   // Save the selected sidebar tool after saved values have loaded.
@@ -662,6 +700,34 @@ Calculated with Prop Pilot`;
       setCopiedSummary(null);
       setCopyFailedSummary(type);
       setTimeout(() => setCopyFailedSummary(null), 2000);
+    }
+  }
+
+  // Builds a shareable link that pre-fills the calculator for the recipient.
+  async function copyShareLink(type: ActiveTool) {
+    const query =
+      type === "risk"
+        ? buildShareQuery("risk", {
+            account: accountSize,
+            risk: riskPercent,
+            sl: stopLoss,
+            pip: dollarValuePerPip,
+          })
+        : buildShareQuery("drawdown", {
+            balance: startOfDayBalance,
+            limit: dailyLossPercent,
+            pl: currentDayPL,
+            open: openTradeRisk,
+          });
+
+    const shareUrl = `${window.location.origin}/?${query}`;
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopiedLink(type);
+      setTimeout(() => setCopiedLink(null), 2000);
+    } catch {
+      setCopiedLink(null);
     }
   }
 
@@ -1096,6 +1162,14 @@ Calculated with Prop Pilot`;
                               </button>
 
                               <button
+                                className="inline-flex w-fit rounded-lg border border-slate-700/80 px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-white"
+                                type="button"
+                                onClick={() => copyShareLink("risk")}
+                              >
+                                {copiedLink === "risk" ? "Link copied" : "Copy Link"}
+                              </button>
+
+                              <button
                                 className="inline-flex w-fit rounded-lg bg-cyan-400 px-3 py-1.5 text-xs font-semibold text-slate-950 transition hover:bg-cyan-300"
                                 type="button"
                                 onClick={() => openShareCard("risk")}
@@ -1337,6 +1411,16 @@ Calculated with Prop Pilot`;
                                   : copyFailedSummary === "drawdown"
                                     ? "Copy failed"
                                     : "Copy Summary"}
+                              </button>
+
+                              <button
+                                className="inline-flex w-fit rounded-lg border border-slate-700/80 px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-white"
+                                type="button"
+                                onClick={() => copyShareLink("drawdown")}
+                              >
+                                {copiedLink === "drawdown"
+                                  ? "Link copied"
+                                  : "Copy Link"}
                               </button>
 
                               <button

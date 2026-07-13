@@ -1,5 +1,5 @@
 {
-    "name": "trading-calc",
+    "name": "prop-pilot",
     "version": "0.1.0",
     "private": true,
     "scripts": {
@@ -7,7 +7,9 @@
         "build": "next build",
         "start": "next start",
         "lint": "eslint",
-        "test:calculations": "tsc lib/calculations.test.ts --outDir /private/tmp/prop-pilot-tests --module commonjs --target es2017 --skipLibCheck && node /private/tmp/prop-pilot-tests/calculations.test.js"
+        "test:calculations": "tsc lib/calculations.test.ts --outDir /private/tmp/prop-pilot-tests --module commonjs --target es2017 --skipLibCheck && node /private/tmp/prop-pilot-tests/calculations.test.js",
+        "test:sharelink": "tsc lib/shareLink.test.ts --outDir /private/tmp/prop-pilot-tests --module commonjs --target es2017 --skipLibCheck && node /private/tmp/prop-pilot-tests/shareLink.test.js",
+        "test": "npm run test:calculations && npm run test:sharelink"
     },
     "dependencies": {
         "@vercel/analytics": "^2.0.1",

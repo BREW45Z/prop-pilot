@@ -167,6 +167,44 @@ Plan:
 Why it helps distribution: turns every calculation into a spreadable artifact.
 The share carries the product, not just a screenshot.
 
+#### 6.2.1 Implementation Plan (first version)
+
+Smallest safe version. No new packages, no backend, no database, no formula
+changes. Uses the browser's built-in `URLSearchParams`.
+
+Target file: `components/PropPilotWizard.tsx`.
+
+URL shape (query params on the homepage, so no new routes needed):
+
+```txt
+Risk:     /?tool=risk&account=50000&risk=1&sl=50&pip=10
+Drawdown: /?tool=drawdown&balance=50000&limit=5&pl=-200&open=100
+```
+
+Two parts:
+
+1. **Read on load.** A one-time effect checks the URL for these params. If
+   present, it fills the matching inputs and selects the right tool. Runs
+   alongside the existing localStorage load. URL values take priority over
+   saved values when a share link is opened.
+
+2. **Write ("Copy Link" button).** A helper builds the URL from the current
+   inputs and copies it to the clipboard, placed next to the existing
+   Copy Summary / Share Card actions. Reuses the same clipboard + "Copied!"
+   feedback pattern already in the component.
+
+Safety rules for this feature:
+
+- Validate/parse every incoming param the same careful way saved values are
+  parsed today (ignore anything malformed; never trust raw URL input).
+- Do not change any calculation.
+- Do not add packages.
+- Keep the URL human-readable (plain query params, not encoded blobs) so links
+  look trustworthy when shared.
+
+Rollout: implement in small approved steps — read first, then the button,
+type-check after each, review live, then commit.
+
 ### 6.3 Dynamic Share-Card / OG Images
 
 Auto-generate a unique social-preview image that shows the trader's actual
