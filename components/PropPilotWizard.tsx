@@ -24,99 +24,39 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import {
+  brandAssets,
+  drawdownInsightMessages,
+  drawdownSteps,
+  inputClass,
+  labelClass,
+  metricCard,
+  metricLabel,
+  riskSteps,
+  storageKeys,
+  wizardInputArea,
+  wizardStepPanel,
+  type ActiveTool,
+  type CopiedSummary,
+  type DailyDrawdownStorage,
+  type RiskCalculatorStorage,
+  type ThemeMode,
+} from "@/lib/wizardConstants";
+import {
+  getRandomDrawdownInsight,
+  isActiveTool,
+  isDailyDrawdownStorage,
+  isRiskCalculatorStorage,
+  isThemeMode,
+} from "@/lib/wizardHelpers";
 
-type ActiveTool = "risk" | "drawdown";
-type CopiedSummary = ActiveTool | null;
-type ThemeMode = "dark" | "light";
-
-// Saved browser preference shapes.
-type RiskCalculatorStorage = {
-  accountSize: string;
-  riskPercent: string;
-  stopLoss: string;
-  dollarValuePerPip: string;
-};
-
-type DailyDrawdownStorage = {
-  startOfDayBalance: string;
-  dailyLossPercent: string;
-  currentDayPL: string;
-  openTradeRisk: string;
-};
-
-const storageKeys = {
-  lastTool: "propPilot.lastTool",
-  riskCalculator: "propPilot.riskCalculator",
-  dailyDrawdown: "propPilot.dailyDrawdown",
-  theme: "propPilot.theme",
-};
-
-const brandAssets = {
-  logoMarkDark:
-    "/brand/prop_pilot_approved_dual_mode_asset_pack/logo-mark-dark-transparent.png",
-  logoMarkLight:
-    "/brand/prop_pilot_approved_dual_mode_asset_pack/logo-mark-light.png",
-  wordmarkDark:
-    "/brand/transparent-prop_pilot_transparent_logo_pack/prop-pilot-horizontal-dark-transparent.png",
-  wordmarkLight:
-    "/brand/transparent-prop_pilot_transparent_logo_pack/prop-pilot-horizontal-light-black-text-transparent.png",
-  landingHorizontalDark:
-    "/brand/transparent-prop_pilot_transparent_logo_pack/prop-pilot-horizontal-dark-transparent.png",
-  landingHorizontalLight:
-    "/brand/transparent-prop_pilot_transparent_logo_pack/prop-pilot-horizontal-light-black-text-transparent.png",
-  socialAvatarDark:
-    "/brand/prop_pilot_approved_dual_mode_asset_pack/social-avatar-dark.png",
-  socialAvatarLight:
-    "/brand/prop_pilot_approved_dual_mode_asset_pack/social-avatar-light.png",
-};
-
-// Wizard step labels.
-const riskSteps = ["Account", "Risk", "Trade Setup", "Results"];
-const drawdownSteps = ["Balance", "Limit", "Day Risk", "Results"];
-
-// Shared UI class names used across the wizard.
-const inputClass =
-  "h-9 rounded-lg border border-[var(--border-soft)] bg-[var(--surface-strong)] px-3 text-sm text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-faint)] hover:border-[var(--border-strong)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-ring)]";
-const labelClass = "grid gap-1.5 text-xs font-semibold text-[var(--text-soft)]";
-const metricCard =
-  "h-full rounded-xl border border-[var(--border-soft)] bg-[var(--surface-strong)] p-3 shadow-sm shadow-black/10 transition hover:border-[var(--border-strong)]";
-const metricLabel =
-  "text-[11px] font-bold uppercase tracking-wide text-[var(--text-faint)]";
-const wizardStepPanel =
-  "grid min-h-[14rem] items-center gap-4 lg:h-56 lg:grid-cols-[17rem_minmax(0,1fr)]";
-const wizardInputArea =
-  "grid min-h-[8.5rem] items-stretch gap-3 rounded-xl border border-[var(--border-soft)] bg-[var(--surface-muted)] p-3 sm:grid-cols-2";
-
+// Sidebar "Coming Soon" tools. Kept here because it pairs labels with icons.
 const futureTools = [
   { label: "Consistency Tracker", Icon: ClipboardList },
   { label: "Prop Health Score", Icon: Activity },
   { label: "Journal", Icon: BookOpen },
   { label: "Presets", Icon: Settings },
 ];
-
-const drawdownInsightMessages = {
-  Healthy: [
-    "Plenty of room remains. Stay disciplined and keep your planned risk unchanged.",
-    "Capital is protected. There is no need to increase risk just because you have room left.",
-    "Your account still has breathing room. Trade the plan, not the emotion.",
-    "Good position. Protect the day and avoid unnecessary risk.",
-  ],
-  "Close to Breach": [
-    "Today's objective is account preservation. Waiting for tomorrow is better than forcing another trade.",
-    "You are trading with limited margin for error. Only take an A+ setup.",
-    "Protect the account first. Missing one trade costs less than losing the challenge.",
-    "This is not the time to chase. Protect your remaining room.",
-    "One unnecessary trade can turn a bad day into a failed account.",
-  ],
-  Breached: [
-    "Your daily loss limit has been breached. Before your next prop account, set your limits in Prop Pilot before placing the first trade.",
-    "The daily rule has been broken. Use this result as a reset point, not a reason to chase.",
-    "Stop here. On the next account, calculate daily risk before the first trade-not after the damage.",
-    "A prop challenge is protected one decision at a time. Build the risk plan before the next session.",
-  ],
-};
-
-type DrawdownInsightStatus = keyof typeof drawdownInsightMessages;
 
 function FieldLabel({ helpText, label }: { helpText: string; label: string }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -146,60 +86,6 @@ function FieldLabel({ helpText, label }: { helpText: string; label: string }) {
   );
 }
 
-// Runtime guards keep localStorage data safe before using it.
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
-}
-
-function isString(value: unknown) {
-  return typeof value === "string";
-}
-
-function isActiveTool(value: unknown): value is ActiveTool {
-  return value === "risk" || value === "drawdown";
-}
-
-function isThemeMode(value: unknown): value is ThemeMode {
-  return value === "dark" || value === "light";
-}
-
-function isRiskCalculatorStorage(
-  value: unknown,
-): value is RiskCalculatorStorage {
-  return (
-    isRecord(value) &&
-    isString(value.accountSize) &&
-    isString(value.riskPercent) &&
-    isString(value.stopLoss) &&
-    isString(value.dollarValuePerPip)
-  );
-}
-
-function isDailyDrawdownStorage(value: unknown): value is DailyDrawdownStorage {
-  return (
-    isRecord(value) &&
-    isString(value.startOfDayBalance) &&
-    isString(value.dailyLossPercent) &&
-    isString(value.currentDayPL) &&
-    isString(value.openTradeRisk)
-  );
-}
-
-function getDrawdownInsightStatus(status: string): DrawdownInsightStatus {
-  if (status === "Close to Breach" || status === "Breached") {
-    return status;
-  }
-
-  return "Healthy";
-}
-
-function getRandomDrawdownInsight(status: string) {
-  const insightStatus = getDrawdownInsightStatus(status);
-  const messages = drawdownInsightMessages[insightStatus];
-  const randomIndex = Math.floor(Math.random() * messages.length);
-
-  return messages[randomIndex];
-}
 
 function AtomBackground() {
   return (

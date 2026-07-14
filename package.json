@@ -9,7 +9,8 @@
         "lint": "eslint",
         "test:calculations": "tsc lib/calculations.test.ts --outDir /private/tmp/prop-pilot-tests --module commonjs --target es2017 --skipLibCheck && node /private/tmp/prop-pilot-tests/calculations.test.js",
         "test:sharelink": "tsc lib/shareLink.test.ts --outDir /private/tmp/prop-pilot-tests --module commonjs --target es2017 --skipLibCheck && node /private/tmp/prop-pilot-tests/shareLink.test.js",
-        "test": "npm run test:calculations && npm run test:sharelink"
+        "test:wizardhelpers": "tsc lib/wizardHelpers.test.ts --outDir /private/tmp/prop-pilot-tests --module commonjs --target es2017 --skipLibCheck && node /private/tmp/prop-pilot-tests/wizardHelpers.test.js",
+        "test": "npm run test:calculations && npm run test:sharelink && npm run test:wizardhelpers"
     },
     "dependencies": {
         "@vercel/analytics": "^2.0.1",
