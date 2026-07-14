@@ -10,6 +10,7 @@ import {
   getDailyDrawdownStatus,
 } from "@/lib/calculations";
 import { buildShareQuery, parseShareLink } from "@/lib/shareLink";
+import { track } from "@vercel/analytics";
 import { toPng } from "html-to-image";
 import {
   Activity,
@@ -477,6 +478,11 @@ export default function PropPilotWizard() {
     }
 
     if (!isLastStep) {
+      // Fire when the user advances onto the final (results) step.
+      if (currentStep + 1 === steps.length - 1) {
+        track("reached_results", { tool: activeTool });
+      }
+
       setHasTriedToContinue(false);
       setActiveStep(currentStep + 1);
     }
@@ -565,6 +571,8 @@ Calculated with Prop Pilot`;
   }
 
   async function copySummary(type: ActiveTool) {
+    track("copy_summary", { tool: type });
+
     const summaryText =
       type === "risk"
         ? buildRiskSummaryText()
@@ -586,6 +594,8 @@ Calculated with Prop Pilot`;
 
   // Builds a shareable link that pre-fills the calculator for the recipient.
   async function copyShareLink(type: ActiveTool) {
+    track("copy_link", { tool: type });
+
     const query =
       type === "risk"
         ? buildShareQuery("risk", {
@@ -616,6 +626,7 @@ Calculated with Prop Pilot`;
 
   // Share Card modal state and PNG download helper.
   function openShareCard(type: ActiveTool) {
+    track("open_share_card", { tool: type });
     setDownloadError("");
     setShareCardType(type);
   }
@@ -629,6 +640,8 @@ Calculated with Prop Pilot`;
     if (!shareCardRef.current || !shareCardType) {
       return;
     }
+
+    track("download_png", { tool: shareCardType });
 
     try {
       setDownloadError("");
@@ -677,7 +690,10 @@ Calculated with Prop Pilot`;
             <button
               className="inline-flex min-w-60 items-center justify-center rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-slate-950 shadow-2xl shadow-cyan-500/20 transition hover:scale-[1.01] hover:bg-cyan-300"
               type="button"
-              onClick={() => setHasStarted(true)}
+              onClick={() => {
+                track("start_calculating");
+                setHasStarted(true);
+              }}
             >
               Start Calculating
               <span className="ml-3 text-lg leading-none">→</span>
