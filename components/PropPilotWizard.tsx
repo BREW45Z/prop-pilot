@@ -26,7 +26,6 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
   brandAssets,
-  drawdownInsightMessages,
   drawdownSteps,
   inputClass,
   labelClass,
@@ -43,7 +42,7 @@ import {
   type ThemeMode,
 } from "@/lib/wizardConstants";
 import {
-  getRandomDrawdownInsight,
+  getBeforeYouTradeChecks,
   isActiveTool,
   isDailyDrawdownStorage,
   isRiskCalculatorStorage,
@@ -85,7 +84,6 @@ function FieldLabel({ helpText, label }: { helpText: string; label: string }) {
     </span>
   );
 }
-
 
 function AtomBackground() {
   return (
@@ -187,11 +185,9 @@ export default function PropPilotWizard() {
   const [copyFailedSummary, setCopyFailedSummary] =
     useState<CopiedSummary>(null);
   const [copiedLink, setCopiedLink] = useState<CopiedSummary>(null);
+  const [fallbackText, setFallbackText] = useState("");
   const [shareCardType, setShareCardType] = useState<ActiveTool | null>(null);
   const [downloadError, setDownloadError] = useState("");
-  const [drawdownInsight, setDrawdownInsight] = useState(
-    drawdownInsightMessages.Healthy[0],
-  );
   const shareCardRef = useRef<HTMLDivElement | null>(null);
   const hasLoadedSavedValues = useRef(false);
   const hasLoadedTheme = useRef(false);
@@ -450,8 +446,8 @@ export default function PropPilotWizard() {
       : currentStep === 0
         ? "Enter start of day balance to continue."
         : currentStep === 1
-        ? "Enter daily loss limit percentage to continue."
-        : "Enter current day P/L to continue.";
+          ? "Enter daily loss limit percentage to continue."
+          : "Enter current day P/L to continue.";
 
   // Navigation helpers.
   function setActiveStep(nextStep: number) {
@@ -481,10 +477,6 @@ export default function PropPilotWizard() {
     }
 
     if (!isLastStep) {
-      if (activeTool === "drawdown" && currentStep === steps.length - 2) {
-        setDrawdownInsight(getRandomDrawdownInsight(drawdownStatus));
-      }
-
       setHasTriedToContinue(false);
       setActiveStep(currentStep + 1);
     }
@@ -581,11 +573,13 @@ Calculated with Prop Pilot`;
     try {
       await navigator.clipboard.writeText(summaryText);
       setCopyFailedSummary(null);
+      setFallbackText("");
       setCopiedSummary(type);
       setTimeout(() => setCopiedSummary(null), 2000);
     } catch {
       setCopiedSummary(null);
       setCopyFailedSummary(type);
+      setFallbackText(summaryText);
       setTimeout(() => setCopyFailedSummary(null), 2000);
     }
   }
@@ -611,10 +605,12 @@ Calculated with Prop Pilot`;
 
     try {
       await navigator.clipboard.writeText(shareUrl);
+      setFallbackText("");
       setCopiedLink(type);
       setTimeout(() => setCopiedLink(null), 2000);
     } catch {
       setCopiedLink(null);
+      setFallbackText(shareUrl);
     }
   }
 
@@ -669,9 +665,8 @@ Calculated with Prop Pilot`;
           <div className="mx-auto grid w-full max-w-4xl justify-items-center gap-7 py-10 text-center">
             <div className="grid gap-4">
               <h1 className="mx-auto max-w-3xl text-4xl font-black tracking-tight text-[var(--text-primary)] sm:text-5xl">
-                Know your risk{" "}
-                <span className="text-cyan-300">before</span> you place the
-                trade.
+                Know your risk <span className="text-cyan-300">before</span> you
+                place the trade.
               </h1>
               <p className="mx-auto max-w-xl text-base leading-7 text-[var(--text-muted)]">
                 A simple tool for prop traders to manage risk, daily drawdown,
@@ -752,727 +747,784 @@ Calculated with Prop Pilot`;
         </div>
       ) : (
         <div className="relative z-10 min-h-screen md:grid md:h-screen md:grid-cols-[15rem_minmax(0,1fr)]">
-        <aside className="flex border-b border-[var(--border-soft)] bg-[var(--surface)] p-4 shadow-2xl shadow-black/20 backdrop-blur md:h-screen md:flex-col md:border-b-0 md:border-r">
-          <div className="w-full">
-            <BrandMark theme={theme} />
-
-            <button
-              className="mt-5 inline-flex w-full items-center justify-center rounded-xl border border-[var(--border-soft)] bg-[var(--surface-muted)] px-3 py-2 text-xs font-bold text-[var(--text-soft)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
-              type="button"
-              onClick={() => setHasStarted(false)}
-            >
-              Back to Home
-            </button>
-
-            <nav className="mt-7 grid gap-1.5">
-              <p className="mb-1 px-2 text-[11px] font-bold uppercase tracking-wide text-slate-500">
-                Tools
-              </p>
+          <aside className="flex border-b border-[var(--border-soft)] bg-[var(--surface)] p-4 shadow-2xl shadow-black/20 backdrop-blur md:h-screen md:flex-col md:border-b-0 md:border-r">
+            <div className="w-full">
+              <BrandMark theme={theme} />
 
               <button
-                className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-left text-sm font-semibold transition ${
-                  activeTool === "risk"
-                    ? "border-cyan-400/30 bg-cyan-400/10 text-white shadow-lg shadow-cyan-500/10"
-                    : "border-transparent text-slate-400 hover:border-slate-800 hover:bg-slate-900/80 hover:text-white"
-                }`}
+                className="mt-5 inline-flex w-full items-center justify-center rounded-xl border border-[var(--border-soft)] bg-[var(--surface-muted)] px-3 py-2 text-xs font-bold text-[var(--text-soft)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
                 type="button"
-                onClick={() => changeTool("risk")}
+                onClick={() => setHasStarted(false)}
               >
-                <Calculator className="size-5 text-cyan-300" />
-                Risk Calculator
+                Back to Home
               </button>
 
-              <button
-                className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-left text-sm font-semibold transition ${
-                  activeTool === "drawdown"
-                    ? "border-cyan-400/30 bg-cyan-400/10 text-white shadow-lg shadow-cyan-500/10"
-                    : "border-transparent text-slate-400 hover:border-slate-800 hover:bg-slate-900/80 hover:text-white"
-                }`}
-                type="button"
-                onClick={() => changeTool("drawdown")}
-              >
-                <TrendingDown className="size-5 text-cyan-300" />
-                Daily Drawdown
-              </button>
-            </nav>
-
-            <div className="mt-6 grid gap-1.5 border-t border-slate-800/70 pt-5">
-              <p className="mb-1 px-2 text-[11px] font-bold uppercase tracking-wide text-slate-500">
-                Coming Soon
-              </p>
-              {futureTools.map(({ label, Icon }) => (
-                <p
-                  className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-900/50 hover:text-slate-400"
-                  key={label}
-                >
-                  <Icon className="size-5" />
-                  {label}
+              <nav className="mt-7 grid gap-1.5">
+                <p className="mb-1 px-2 text-[11px] font-bold uppercase tracking-wide text-slate-500">
+                  Tools
                 </p>
-              ))}
+
+                <button
+                  className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-left text-sm font-semibold transition ${
+                    activeTool === "risk"
+                      ? "border-cyan-400/30 bg-cyan-400/10 text-white shadow-lg shadow-cyan-500/10"
+                      : "border-transparent text-slate-400 hover:border-slate-800 hover:bg-slate-900/80 hover:text-white"
+                  }`}
+                  type="button"
+                  onClick={() => changeTool("risk")}
+                >
+                  <Calculator className="size-5 text-cyan-300" />
+                  Risk Calculator
+                </button>
+
+                <button
+                  className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-left text-sm font-semibold transition ${
+                    activeTool === "drawdown"
+                      ? "border-cyan-400/30 bg-cyan-400/10 text-white shadow-lg shadow-cyan-500/10"
+                      : "border-transparent text-slate-400 hover:border-slate-800 hover:bg-slate-900/80 hover:text-white"
+                  }`}
+                  type="button"
+                  onClick={() => changeTool("drawdown")}
+                >
+                  <TrendingDown className="size-5 text-cyan-300" />
+                  Daily Drawdown
+                </button>
+              </nav>
+
+              <div className="mt-6 grid gap-1.5 border-t border-slate-800/70 pt-5">
+                <p className="mb-1 px-2 text-[11px] font-bold uppercase tracking-wide text-slate-500">
+                  Coming Soon
+                </p>
+                {futureTools.map(({ label, Icon }) => (
+                  <p
+                    className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-900/50 hover:text-slate-400"
+                    key={label}
+                  >
+                    <Icon className="size-5" />
+                    {label}
+                  </p>
+                ))}
+              </div>
             </div>
-          </div>
 
-          <div className="mt-auto hidden border-t border-slate-800/70 pt-4 text-xs leading-5 text-slate-500 md:block">
-            <p>© 2026 Prop Pilot</p>
-            <p>Built for prop traders who want to avoid rule breaches.</p>
-            <a
-              className="mt-3 inline-flex w-full items-center justify-center rounded-xl border border-cyan-400/40 bg-cyan-400/10 px-3 py-2 text-xs font-bold text-cyan-200 shadow-lg shadow-cyan-500/10 transition hover:border-cyan-300/70 hover:bg-cyan-400/25 hover:text-white"
-              href="https://docs.google.com/forms/d/e/1FAIpQLSf2UXRARjN0FhNlzAAv3sNvXLcUpUTm3GzGA8Y_nUik7rCbOg/viewform?usp=header"
-            >
-              Send feedback
-            </a>
-          </div>
-        </aside>
+            <div className="mt-auto hidden border-t border-slate-800/70 pt-4 text-xs leading-5 text-slate-500 md:block">
+              <p>© 2026 Prop Pilot</p>
+              <p>Built for prop traders who want to avoid rule breaches.</p>
+              <a
+                className="mt-3 inline-flex w-full items-center justify-center rounded-xl border border-cyan-400/40 bg-cyan-400/10 px-3 py-2 text-xs font-bold text-cyan-200 shadow-lg shadow-cyan-500/10 transition hover:border-cyan-300/70 hover:bg-cyan-400/25 hover:text-white"
+                href="https://docs.google.com/forms/d/e/1FAIpQLSf2UXRARjN0FhNlzAAv3sNvXLcUpUTm3GzGA8Y_nUik7rCbOg/viewform?usp=header"
+              >
+                Send feedback
+              </a>
+            </div>
+          </aside>
 
-        <main className="relative min-h-0 px-4 pb-8 pt-20 md:h-screen md:min-w-0 md:overflow-y-auto md:px-8 md:pt-32">
-          <div className="absolute right-4 top-4 md:right-8 md:top-8">
-            <ThemeToggle theme={theme} onToggle={toggleTheme} />
-          </div>
+          <main className="relative min-h-0 px-4 pb-8 pt-20 md:h-screen md:min-w-0 md:overflow-y-auto md:px-8 md:pt-32">
+            <div className="absolute right-4 top-4 md:right-8 md:top-8">
+              <ThemeToggle theme={theme} onToggle={toggleTheme} />
+            </div>
 
-          <div className="mx-auto grid h-full w-full max-w-5xl content-start gap-3">
-            <header className="border-b border-slate-800/70 pb-4">
-              <p className="text-xs font-bold uppercase tracking-wide text-cyan-300/80">
-                Ask the Trade Wizard
-              </p>
-              <h1 className="mt-1 text-2xl font-bold tracking-tight text-white">
-                {pageTitle}
-              </h1>
-              <p className="mt-1 text-sm text-slate-400">{pageSubtitle}</p>
-            </header>
+            <div className="mx-auto grid h-full w-full max-w-5xl content-start gap-3">
+              <header className="border-b border-slate-800/70 pb-4">
+                <p className="text-xs font-bold uppercase tracking-wide text-cyan-300/80">
+                  Ask the Trade Wizard
+                </p>
+                <h1 className="mt-1 text-2xl font-bold tracking-tight text-white">
+                  {pageTitle}
+                </h1>
+                <p className="mt-1 text-sm text-slate-400">{pageSubtitle}</p>
+              </header>
 
-            <div className="grid min-h-0 justify-items-center pt-2">
-              <section className="mx-auto grid w-full max-w-5xl gap-4 rounded-2xl border border-slate-800/80 bg-slate-900/70 p-4 shadow-2xl shadow-black/30 backdrop-blur">
-                <div className="grid gap-3 sm:flex sm:items-center sm:justify-center">
-                  {steps.map((step, index) => {
-                    const isActive = currentStep === index;
-                    const isComplete = currentStep > index;
+              <div className="grid min-h-0 justify-items-center pt-2">
+                <section className="mx-auto grid w-full max-w-5xl gap-4 rounded-2xl border border-slate-800/80 bg-slate-900/70 p-4 shadow-2xl shadow-black/30 backdrop-blur">
+                  <div className="grid gap-3 sm:flex sm:items-center sm:justify-center">
+                    {steps.map((step, index) => {
+                      const isActive = currentStep === index;
+                      const isComplete = currentStep > index;
 
-                    return (
-                      <div
-                        className="grid gap-2 sm:flex sm:flex-1 sm:items-center"
-                        key={step}
-                      >
-                        <div className="flex items-center gap-3">
-                          <span
-                            className={`grid size-8 shrink-0 place-items-center rounded-full border text-xs font-bold ${
-                              isActive
-                                ? "border-cyan-300 bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-500/25"
-                                : isComplete
-                                  ? "border-cyan-400/40 bg-cyan-400/10 text-cyan-200"
-                                  : "border-slate-700 bg-slate-950 text-slate-500"
-                            }`}
-                          >
-                            {index + 1}
-                          </span>
-
-                          <div>
-                            <p
-                              className={`text-sm font-semibold leading-4 ${
-                                isActive ? "text-white" : "text-slate-500"
+                      return (
+                        <div
+                          className="grid gap-2 sm:flex sm:flex-1 sm:items-center"
+                          key={step}
+                        >
+                          <div className="flex items-center gap-3">
+                            <span
+                              className={`grid size-8 shrink-0 place-items-center rounded-full border text-xs font-bold ${
+                                isActive
+                                  ? "border-cyan-300 bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-500/25"
+                                  : isComplete
+                                    ? "border-cyan-400/40 bg-cyan-400/10 text-cyan-200"
+                                    : "border-slate-700 bg-slate-950 text-slate-500"
                               }`}
                             >
-                              {step}
-                            </p>
-                            <p className="text-xs text-slate-600">
-                              {index === steps.length - 1
-                                ? "Risk report"
-                                : "Required step"}
-                            </p>
-                          </div>
-                        </div>
+                              {index + 1}
+                            </span>
 
-                        {index < steps.length - 1 && (
-                          <div
-                            className={`hidden h-px flex-1 sm:block ${
-                              isComplete ? "bg-cyan-400/50" : "bg-slate-800"
-                            }`}
-                          />
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {activeTool === "risk" && (
-                  <div className="grid gap-4">
-                    {currentStep === 0 && (
-                      <div className={wizardStepPanel}>
-                        <div className={metricCard}>
-                          <p className={metricLabel}>Step 1</p>
-                          <h2 className="mt-1 text-lg font-bold">
-                            Account details
-                          </h2>
-                          <p className="mt-1 text-sm leading-5 text-slate-400">
-                            Start with the account size you want to risk from.
-                          </p>
-                        </div>
-
-                        <div className={wizardInputArea}>
-                          <label className={labelClass}>
-                            <FieldLabel
-                              label="Account Size"
-                              helpText="The account balance used to calculate risk."
-                            />
-                            <input
-                              className={inputClass}
-                              min="0"
-                              placeholder="5000"
-                              type="number"
-                              value={accountSize}
-                              onChange={(event) =>
-                                setAccountSize(
-                                  keepPositiveNumber(event.target.value),
-                                )
-                              }
-                            />
-                          </label>
-
-                          <div className={metricCard}>
-                            <p className={metricLabel}>Account Balance</p>
-                            <p className="mt-1 text-xl font-bold text-white">
-                              {formatWholeCurrency(account)}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {currentStep === 1 && (
-                      <div className={wizardStepPanel}>
-                        <div className={metricCard}>
-                          <p className={metricLabel}>Step 2</p>
-                          <h2 className="mt-1 text-lg font-bold">
-                            Risk setting
-                          </h2>
-                          <p className="mt-1 text-sm leading-5 text-slate-400">
-                            Choose how much of the account to risk on this
-                            trade.
-                          </p>
-                        </div>
-
-                        <div className={wizardInputArea}>
-                          <label className={labelClass}>
-                            <FieldLabel
-                              label="Risk (%)"
-                              helpText="The percentage of your account you are willing to risk on one trade."
-                            />
-                            <input
-                              className={inputClass}
-                              min="0"
-                              placeholder="1"
-                              step="0.1"
-                              type="number"
-                              value={riskPercent}
-                              onChange={(event) =>
-                                setRiskPercent(
-                                  keepPositiveNumber(event.target.value),
-                                )
-                              }
-                            />
-                          </label>
-
-                          <div className={metricCard}>
-                            <p className={metricLabel}>Estimated Risk</p>
-                            <p className="mt-1 text-xl font-bold text-white">
-                              {formatCurrency(riskAmount)}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {currentStep === 2 && (
-                      <div className={wizardStepPanel}>
-                        <div className={metricCard}>
-                          <p className={metricLabel}>Step 3</p>
-                          <h2 className="mt-1 text-lg font-bold">
-                            Trade setup
-                          </h2>
-                          <p className="mt-1 text-sm leading-5 text-slate-400">
-                            Add stop distance and pip value to calculate lots.
-                          </p>
-                        </div>
-
-                        <div className={wizardInputArea}>
-                          <label className={labelClass}>
-                            <FieldLabel
-                              label="Stop Loss (pips)"
-                              helpText="The distance between your entry and stop loss."
-                            />
-                            <input
-                              className={inputClass}
-                              min="0"
-                              placeholder="20"
-                              step="0.1"
-                              type="number"
-                              value={stopLoss}
-                              onChange={(event) =>
-                                setStopLoss(
-                                  keepPositiveNumber(event.target.value),
-                                )
-                              }
-                            />
-                          </label>
-
-                          <label className={labelClass}>
-                            <FieldLabel
-                              label="Dollar Value per Pip"
-                              helpText="How much one pip is worth for your position."
-                            />
-                            <input
-                              className={inputClass}
-                              min="0"
-                              placeholder="10"
-                              step="0.01"
-                              type="number"
-                              value={dollarValuePerPip}
-                              onChange={(event) =>
-                                setDollarValuePerPip(
-                                  keepPositiveNumber(event.target.value),
-                                )
-                              }
-                            />
-                          </label>
-                        </div>
-                      </div>
-                    )}
-
-                    {currentStep === 3 && (
-                      <div className="grid gap-3">
-                        <div className="grid gap-3 rounded-xl border border-cyan-400/20 bg-slate-950/90 p-3 text-slate-100 sm:grid-cols-[1fr_0.75fr] sm:items-center">
-                          <div>
-                            <p className="text-xs font-bold uppercase tracking-wide text-cyan-300">
-                              Risk Report Ready
-                            </p>
-                            <h2 className="mt-1 text-lg font-bold">
-                              Confirm position size before entry.
-                            </h2>
-                            <p className="mt-1 text-xs leading-5 text-slate-400">
-                              This report turns account risk, stop loss, and pip
-                              value into a clear lot size.
-                            </p>
-
-                            {/* Result actions: copy plain text or open the branded Share Card modal. */}
-                            <div className="mt-3 flex flex-wrap gap-2">
-                              <button
-                                className="inline-flex w-fit rounded-lg border border-slate-700/80 px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-white"
-                                type="button"
-                                onClick={() => copySummary("risk")}
+                            <div>
+                              <p
+                                className={`text-sm font-semibold leading-4 ${
+                                  isActive ? "text-white" : "text-slate-500"
+                                }`}
                               >
-                                {copiedSummary === "risk"
-                                  ? "Copied"
-                                  : copyFailedSummary === "risk"
-                                    ? "Copy failed"
-                                    : "Copy Summary"}
-                              </button>
-
-                              <button
-                                className="inline-flex w-fit rounded-lg border border-slate-700/80 px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-white"
-                                type="button"
-                                onClick={() => copyShareLink("risk")}
-                              >
-                                {copiedLink === "risk" ? "Link copied" : "Copy Link"}
-                              </button>
-
-                              <button
-                                className="inline-flex w-fit rounded-lg bg-cyan-400 px-3 py-1.5 text-xs font-semibold text-slate-950 transition hover:bg-cyan-300"
-                                type="button"
-                                onClick={() => openShareCard("risk")}
-                              >
-                                Share Card
-                              </button>
+                                {step}
+                              </p>
+                              <p className="text-xs text-slate-600">
+                                {index === steps.length - 1
+                                  ? "Risk report"
+                                  : "Required step"}
+                              </p>
                             </div>
                           </div>
 
-                          <div className="rounded-lg border border-cyan-400/20 bg-cyan-400/10 p-3">
-                            <p className={metricLabel}>
-                              <FieldLabel
-                                label="Position Size"
-                                helpText="The lot size calculated from your risk and stop loss."
-                              />
-                            </p>
-                            <p className="mt-1 text-3xl font-bold leading-none text-cyan-300">
-                              {positionSize.toFixed(2)}
-                            </p>
-                            <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                              Lots
-                            </p>
-                            <p className="mt-2 text-xs leading-5 text-slate-400">
-                              Risking {formatCurrency(riskAmount)} (
-                              {risk.toFixed(2)}%) on a {sl.toFixed(0)}-pip stop ={" "}
-                              {positionSize.toFixed(2)} lots.
-                            </p>
-                          </div>
+                          {index < steps.length - 1 && (
+                            <div
+                              className={`hidden h-px flex-1 sm:block ${
+                                isComplete ? "bg-cyan-400/50" : "bg-slate-800"
+                              }`}
+                            />
+                          )}
                         </div>
-
-                        <div className="grid gap-3 sm:grid-cols-3">
-                          <div className={metricCard}>
-                            <p className={metricLabel}>Risk Amount</p>
-                            <p className="mt-1 text-xl font-bold text-white">
-                              {formatCurrency(riskAmount)}
-                            </p>
-                            <p className="mt-1 text-xs text-slate-500">
-                              Amount at risk on this trade.
-                            </p>
-                          </div>
-
-                          <div className={metricCard}>
-                            <p className={metricLabel}>Risk Percent</p>
-                            <p className="mt-1 text-xl font-bold text-white">
-                              {risk.toFixed(2)}%
-                            </p>
-                            <p className="mt-1 text-xs text-slate-500">
-                              Based on account size.
-                            </p>
-                          </div>
-
-                          <div className={metricCard}>
-                            <p className={metricLabel}>Stop Distance</p>
-                            <p className="mt-1 text-xl font-bold text-white">
-                              {sl.toFixed(1)}
-                            </p>
-                            <p className="mt-1 text-xs text-slate-500">
-                              Pips to stop loss.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                      );
+                    })}
                   </div>
-                )}
 
-                {activeTool === "drawdown" && (
-                  <div className="grid gap-4">
-                    {currentStep === 0 && (
-                      <div className={wizardStepPanel}>
-                        <div className={metricCard}>
-                          <p className={metricLabel}>Step 1</p>
-                          <h2 className="mt-1 text-lg font-bold">
-                            Start balance
-                          </h2>
-                          <p className="mt-1 text-sm leading-5 text-slate-400">
-                            Use the balance your daily drawdown rule starts
-                            from.
-                          </p>
-                        </div>
-
-                        <div className={wizardInputArea}>
-                          <label className={labelClass}>
-                            <FieldLabel
-                              label="Start of Day Balance"
-                              helpText="The balance your daily drawdown rule starts from."
-                            />
-                            <input
-                              className={inputClass}
-                              min="0"
-                              placeholder="100000"
-                              type="number"
-                              value={startOfDayBalance}
-                              onChange={(event) =>
-                                setStartOfDayBalance(
-                                  keepPositiveNumber(event.target.value),
-                                )
-                              }
-                            />
-                          </label>
-
+                  {activeTool === "risk" && (
+                    <div className="grid gap-4">
+                      {currentStep === 0 && (
+                        <div className={wizardStepPanel}>
                           <div className={metricCard}>
-                            <p className={metricLabel}>Start-of-Day Balance</p>
-                            <p className="mt-1 text-xl font-bold text-white">
-                              {formatWholeCurrency(dayBalance)}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {currentStep === 1 && (
-                      <div className={wizardStepPanel}>
-                        <div className={metricCard}>
-                          <p className={metricLabel}>Step 2</p>
-                          <h2 className="mt-1 text-lg font-bold">
-                            Daily limit
-                          </h2>
-                          <p className="mt-1 text-sm leading-5 text-slate-400">
-                            Add the daily loss limit percentage from your prop
-                            firm rules.
-                          </p>
-                        </div>
-
-                        <div className={wizardInputArea}>
-                          <label className={labelClass}>
-                            <FieldLabel
-                              label="Daily Loss Limit (%)"
-                              helpText="The maximum percentage your prop firm allows you to lose in one day."
-                            />
-                            <input
-                              className={inputClass}
-                              max="100"
-                              min="0"
-                              placeholder="5"
-                              step="0.1"
-                              type="number"
-                              value={dailyLossPercent}
-                              onChange={(event) =>
-                                setDailyLossPercent(
-                                  keepPercentBetweenZeroAndHundred(
-                                    event.target.value,
-                                  ),
-                                )
-                              }
-                            />
-                          </label>
-
-                          <div className={metricCard}>
-                            <p className={metricLabel}>Max Daily Loss</p>
-                            <p className="drawdown-amount mt-1 text-xl font-bold text-white">
-                              {formatCurrency(dailyLossLimit)}
-                            </p>
-                            <p className="mt-1 text-xs text-slate-500">
-                              Based on start balance and limit.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {currentStep === 2 && (
-                      <div className={wizardStepPanel}>
-                        <div className={metricCard}>
-                          <p className={metricLabel}>Step 3</p>
-                          <h2 className="mt-1 text-lg font-bold">
-                            Day risk check
-                          </h2>
-                          <p className="mt-1 text-sm leading-5 text-slate-400">
-                            Enter today&apos;s P/L. Open trade risk is optional.
-                          </p>
-                        </div>
-
-                        <div className={wizardInputArea}>
-                          <label className={labelClass}>
-                            <FieldLabel
-                              label="Current Day P/L"
-                              helpText="Your profit or loss for the current trading day."
-                            />
-                            <input
-                              className={inputClass}
-                              placeholder="-700"
-                              step="1"
-                              type="number"
-                              value={currentDayPL}
-                              onChange={(event) =>
-                                setCurrentDayPL(event.target.value)
-                              }
-                            />
-                          </label>
-
-                          <label className={labelClass}>
-                            <FieldLabel
-                              label="Open Trade Risk"
-                              helpText="The amount still at risk if open trades hit stop loss."
-                            />
-                            <input
-                              className={inputClass}
-                              min="0"
-                              placeholder="300"
-                              step="1"
-                              type="number"
-                              value={openTradeRisk}
-                              onChange={(event) =>
-                                setOpenTradeRisk(
-                                  keepPositiveNumber(event.target.value),
-                                )
-                              }
-                            />
-                          </label>
-                        </div>
-                      </div>
-                    )}
-
-                    {currentStep === 3 && (
-                      <div className="grid gap-3">
-                        <div className="grid gap-3 rounded-xl border border-cyan-400/20 bg-slate-950/90 p-3 text-slate-100 sm:grid-cols-[1fr_0.75fr] sm:items-center">
-                          <div>
-                            <p className="text-xs font-bold uppercase tracking-wide text-cyan-300">
-                              Drawdown Report Ready
-                            </p>
+                            <p className={metricLabel}>Step 1</p>
                             <h2 className="mt-1 text-lg font-bold">
-                              Check your daily rule pressure.
+                              Account details
                             </h2>
-                            <p className="mt-1 text-xs leading-5 text-slate-400">
-                              This report shows how much daily loss room remains
-                              before and after open risk.
+                            <p className="mt-1 text-sm leading-5 text-slate-400">
+                              Start with the account size you want to risk from.
                             </p>
+                          </div>
 
-                            {/* Result actions: copy plain text or open the branded Share Card modal. */}
-                            <div className="mt-3 flex flex-wrap gap-2">
-                              <button
-                                className="inline-flex w-fit rounded-lg border border-slate-700/80 px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-white"
-                                type="button"
-                                onClick={() => copySummary("drawdown")}
-                              >
-                                {copiedSummary === "drawdown"
-                                  ? "Copied"
-                                  : copyFailedSummary === "drawdown"
-                                    ? "Copy failed"
-                                    : "Copy Summary"}
-                              </button>
+                          <div className={wizardInputArea}>
+                            <label className={labelClass}>
+                              <FieldLabel
+                                label="Account Size"
+                                helpText="The account balance used to calculate risk."
+                              />
+                              <input
+                                className={inputClass}
+                                min="0"
+                                placeholder="5000"
+                                type="number"
+                                value={accountSize}
+                                onChange={(event) =>
+                                  setAccountSize(
+                                    keepPositiveNumber(event.target.value),
+                                  )
+                                }
+                              />
+                            </label>
 
-                              <button
-                                className="inline-flex w-fit rounded-lg border border-slate-700/80 px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-white"
-                                type="button"
-                                onClick={() => copyShareLink("drawdown")}
-                              >
-                                {copiedLink === "drawdown"
-                                  ? "Link copied"
-                                  : "Copy Link"}
-                              </button>
+                            <div className={metricCard}>
+                              <p className={metricLabel}>Account Balance</p>
+                              <p className="mt-1 text-xl font-bold text-white">
+                                {formatWholeCurrency(account)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
 
-                              <button
-                                className="inline-flex w-fit rounded-lg bg-cyan-400 px-3 py-1.5 text-xs font-semibold text-slate-950 transition hover:bg-cyan-300"
-                                type="button"
-                                onClick={() => openShareCard("drawdown")}
-                              >
-                                Share Card
-                              </button>
+                      {currentStep === 1 && (
+                        <div className={wizardStepPanel}>
+                          <div className={metricCard}>
+                            <p className={metricLabel}>Step 2</p>
+                            <h2 className="mt-1 text-lg font-bold">
+                              Risk setting
+                            </h2>
+                            <p className="mt-1 text-sm leading-5 text-slate-400">
+                              Choose how much of the account to risk on this
+                              trade.
+                            </p>
+                          </div>
+
+                          <div className={wizardInputArea}>
+                            <label className={labelClass}>
+                              <FieldLabel
+                                label="Risk (%)"
+                                helpText="The percentage of your account you are willing to risk on one trade."
+                              />
+                              <input
+                                className={inputClass}
+                                min="0"
+                                placeholder="1"
+                                step="0.1"
+                                type="number"
+                                value={riskPercent}
+                                onChange={(event) =>
+                                  setRiskPercent(
+                                    keepPositiveNumber(event.target.value),
+                                  )
+                                }
+                              />
+                            </label>
+
+                            <div className={metricCard}>
+                              <p className={metricLabel}>Estimated Risk</p>
+                              <p className="mt-1 text-xl font-bold text-white">
+                                {formatCurrency(riskAmount)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {currentStep === 2 && (
+                        <div className={wizardStepPanel}>
+                          <div className={metricCard}>
+                            <p className={metricLabel}>Step 3</p>
+                            <h2 className="mt-1 text-lg font-bold">
+                              Trade setup
+                            </h2>
+                            <p className="mt-1 text-sm leading-5 text-slate-400">
+                              Add stop distance and pip value to calculate lots.
+                            </p>
+                          </div>
+
+                          <div className={wizardInputArea}>
+                            <label className={labelClass}>
+                              <FieldLabel
+                                label="Stop Loss (pips)"
+                                helpText="The distance between your entry and stop loss."
+                              />
+                              <input
+                                className={inputClass}
+                                min="0"
+                                placeholder="20"
+                                step="0.1"
+                                type="number"
+                                value={stopLoss}
+                                onChange={(event) =>
+                                  setStopLoss(
+                                    keepPositiveNumber(event.target.value),
+                                  )
+                                }
+                              />
+                            </label>
+
+                            <label className={labelClass}>
+                              <FieldLabel
+                                label="Dollar Value per Pip"
+                                helpText="How much one pip is worth for your position."
+                              />
+                              <input
+                                className={inputClass}
+                                min="0"
+                                placeholder="10"
+                                step="0.01"
+                                type="number"
+                                value={dollarValuePerPip}
+                                onChange={(event) =>
+                                  setDollarValuePerPip(
+                                    keepPositiveNumber(event.target.value),
+                                  )
+                                }
+                              />
+                            </label>
+                          </div>
+                        </div>
+                      )}
+
+                      {currentStep === 3 && (
+                        <div className="grid gap-3">
+                          <div className="grid gap-3 rounded-xl border border-cyan-400/20 bg-slate-950/90 p-3 text-slate-100 sm:grid-cols-[1fr_0.75fr] sm:items-center">
+                            <div>
+                              <p className="text-xs font-bold uppercase tracking-wide text-cyan-300">
+                                Risk Report Ready
+                              </p>
+                              <h2 className="mt-1 text-lg font-bold">
+                                Confirm position size before entry.
+                              </h2>
+                              <p className="mt-1 text-xs leading-5 text-slate-400">
+                                This report turns account risk, stop loss, and
+                                pip value into a clear lot size.
+                              </p>
+
+                              {/* Result actions: copy plain text or open the branded Share Card modal. */}
+                              <div className="mt-3 flex flex-wrap gap-2">
+                                <button
+                                  className="inline-flex w-fit rounded-lg border border-slate-700/80 px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-white"
+                                  type="button"
+                                  onClick={() => copySummary("risk")}
+                                >
+                                  {copiedSummary === "risk"
+                                    ? "Copied"
+                                    : copyFailedSummary === "risk"
+                                      ? "Copy failed"
+                                      : "Copy Summary"}
+                                </button>
+
+                                <button
+                                  className="inline-flex w-fit rounded-lg border border-slate-700/80 px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-white"
+                                  type="button"
+                                  onClick={() => copyShareLink("risk")}
+                                >
+                                  {copiedLink === "risk"
+                                    ? "Link copied"
+                                    : "Copy Link"}
+                                </button>
+
+                                <button
+                                  className="inline-flex w-fit rounded-lg bg-cyan-400 px-3 py-1.5 text-xs font-semibold text-slate-950 transition hover:bg-cyan-300"
+                                  type="button"
+                                  onClick={() => openShareCard("risk")}
+                                >
+                                  Share Card
+                                </button>
+                              </div>
+
+                              {fallbackText && (
+                                <div className="mt-3 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3">
+                                  <p className="text-xs font-semibold text-amber-300">
+                                    Copy didn&rsquo;t work automatically. Select
+                                    the text below and copy it.
+                                  </p>
+                                  <textarea
+                                    readOnly
+                                    value={fallbackText}
+                                    onFocus={(event) => event.target.select()}
+                                    className="mt-2 h-20 w-full resize-none rounded-md border border-[var(--border-soft)] bg-[var(--surface-strong)] p-2 text-xs text-[var(--text-primary)]"
+                                  />
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="rounded-lg border border-cyan-400/20 bg-cyan-400/10 p-3">
+                              <p className={metricLabel}>
+                                <FieldLabel
+                                  label="Position Size"
+                                  helpText="The lot size calculated from your risk and stop loss."
+                                />
+                              </p>
+                              <p className="mt-1 text-3xl font-bold leading-none text-cyan-300">
+                                {positionSize.toFixed(2)}
+                              </p>
+                              <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                Lots
+                              </p>
+                              <p className="mt-2 text-xs leading-5 text-slate-400">
+                                Risking {formatCurrency(riskAmount)} (
+                                {risk.toFixed(2)}%) on a {sl.toFixed(0)}-pip
+                                stop = {positionSize.toFixed(2)} lots.
+                              </p>
                             </div>
                           </div>
 
-                          <div className="rounded-lg border border-cyan-400/20 bg-cyan-400/10 p-3">
-                            <p className={metricLabel}>
-                              <FieldLabel
-                                label="Remaining Room"
-                                helpText="How much more loss room remains before reaching the daily limit."
-                              />
-                            </p>
-                            <p
-                              className={`drawdown-amount mt-1 text-3xl font-bold leading-none ${remainingRoomColor}`}
-                            >
-                              {remainingRoom <= 0
-                                ? "Breached"
-                                : formatCurrency(remainingRoom)}
-                            </p>
-                            <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                              Before new risk
-                            </p>
+                          <div className="grid gap-3 sm:grid-cols-3">
+                            <div className={metricCard}>
+                              <p className={metricLabel}>Risk Amount</p>
+                              <p className="mt-1 text-xl font-bold text-white">
+                                {formatCurrency(riskAmount)}
+                              </p>
+                              <p className="mt-1 text-xs text-slate-500">
+                                Amount at risk on this trade.
+                              </p>
+                            </div>
+
+                            <div className={metricCard}>
+                              <p className={metricLabel}>Risk Percent</p>
+                              <p className="mt-1 text-xl font-bold text-white">
+                                {risk.toFixed(2)}%
+                              </p>
+                              <p className="mt-1 text-xs text-slate-500">
+                                Based on account size.
+                              </p>
+                            </div>
+
+                            <div className={metricCard}>
+                              <p className={metricLabel}>Stop Distance</p>
+                              <p className="mt-1 text-xl font-bold text-white">
+                                {sl.toFixed(1)}
+                              </p>
+                              <p className="mt-1 text-xs text-slate-500">
+                                Pips to stop loss.
+                              </p>
+                            </div>
                           </div>
                         </div>
+                      )}
+                    </div>
+                  )}
 
-                        <div className="grid gap-3 sm:grid-cols-3">
+                  {activeTool === "drawdown" && (
+                    <div className="grid gap-4">
+                      {currentStep === 0 && (
+                        <div className={wizardStepPanel}>
                           <div className={metricCard}>
-                            <p className={metricLabel}>
+                            <p className={metricLabel}>Step 1</p>
+                            <h2 className="mt-1 text-lg font-bold">
+                              Start balance
+                            </h2>
+                            <p className="mt-1 text-sm leading-5 text-slate-400">
+                              Use the balance your daily drawdown rule starts
+                              from.
+                            </p>
+                          </div>
+
+                          <div className={wizardInputArea}>
+                            <label className={labelClass}>
                               <FieldLabel
-                                label="Daily Loss Limit"
+                                label="Start of Day Balance"
+                                helpText="The balance your daily drawdown rule starts from."
+                              />
+                              <input
+                                className={inputClass}
+                                min="0"
+                                placeholder="100000"
+                                type="number"
+                                value={startOfDayBalance}
+                                onChange={(event) =>
+                                  setStartOfDayBalance(
+                                    keepPositiveNumber(event.target.value),
+                                  )
+                                }
+                              />
+                            </label>
+
+                            <div className={metricCard}>
+                              <p className={metricLabel}>
+                                Start-of-Day Balance
+                              </p>
+                              <p className="mt-1 text-xl font-bold text-white">
+                                {formatWholeCurrency(dayBalance)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {currentStep === 1 && (
+                        <div className={wizardStepPanel}>
+                          <div className={metricCard}>
+                            <p className={metricLabel}>Step 2</p>
+                            <h2 className="mt-1 text-lg font-bold">
+                              Daily limit
+                            </h2>
+                            <p className="mt-1 text-sm leading-5 text-slate-400">
+                              Add the daily loss limit percentage from your prop
+                              firm rules.
+                            </p>
+                          </div>
+
+                          <div className={wizardInputArea}>
+                            <label className={labelClass}>
+                              <FieldLabel
+                                label="Daily Loss Limit (%)"
                                 helpText="The maximum percentage your prop firm allows you to lose in one day."
                               />
-                            </p>
-                            <p className="mt-1 text-xl font-bold text-white">
-                              {formatCurrency(dailyLossLimit)}
-                            </p>
-                            <p className="mt-1 text-xs text-slate-500">
-                              Max loss allowed today.
-                            </p>
-                          </div>
-
-                          <div className={metricCard}>
-                            <p className={metricLabel}>Loss Used Today</p>
-                            <p className="drawdown-amount mt-1 text-xl font-bold text-red-300">
-                              {formatCurrency(lossUsedToday)}
-                            </p>
-                            <p className="mt-1 text-xs text-slate-500">
-                              Positive P/L does not count as loss used.
-                            </p>
-                          </div>
-
-                          <div className={metricCard}>
-                            <p className={metricLabel}>
-                              <FieldLabel
-                                label="After Open Risk"
-                                helpText="The remaining room after subtracting current open-trade risk."
+                              <input
+                                className={inputClass}
+                                max="100"
+                                min="0"
+                                placeholder="5"
+                                step="0.1"
+                                type="number"
+                                value={dailyLossPercent}
+                                onChange={(event) =>
+                                  setDailyLossPercent(
+                                    keepPercentBetweenZeroAndHundred(
+                                      event.target.value,
+                                    ),
+                                  )
+                                }
                               />
-                            </p>
-                            <p
-                              className={`drawdown-amount mt-1 text-xl font-bold ${remainingAfterRiskColor}`}
-                            >
-                              {formatCurrency(remainingAfterOpenRisk)}
-                            </p>
-                            <p className="mt-1 text-xs text-slate-500">
-                              Remaining after active exposure.
-                            </p>
+                            </label>
+
+                            <div className={metricCard}>
+                              <p className={metricLabel}>Max Daily Loss</p>
+                              <p className="drawdown-amount mt-1 text-xl font-bold text-white">
+                                {formatCurrency(dailyLossLimit)}
+                              </p>
+                              <p className="mt-1 text-xs text-slate-500">
+                                Based on start balance and limit.
+                              </p>
+                            </div>
                           </div>
                         </div>
+                      )}
 
-                        <div className="grid gap-3 sm:grid-cols-[0.7fr_1.3fr]">
+                      {currentStep === 2 && (
+                        <div className={wizardStepPanel}>
                           <div className={metricCard}>
-                            <p className={metricLabel}>Status</p>
-                            <p
-                              className={`mt-2 inline-flex rounded-full border px-3 py-1 text-xs font-bold ${statusColorClass}`}
-                            >
-                              {drawdownStatus}
-                            </p>
-                            <p className="mt-2 text-xs leading-5 text-slate-400">
-                              You&rsquo;ve used {formatCurrency(lossUsedToday)} of
-                              your {formatCurrency(dailyLossLimit)} daily limit
-                              &mdash; {formatCurrency(remainingRoom)} room left.
+                            <p className={metricLabel}>Step 3</p>
+                            <h2 className="mt-1 text-lg font-bold">
+                              Day risk check
+                            </h2>
+                            <p className="mt-1 text-sm leading-5 text-slate-400">
+                              Enter today&apos;s P/L. Open trade risk is
+                              optional.
                             </p>
                           </div>
 
-                          <div className={metricCard}>
-                            <p className={metricLabel}>Trading Insight</p>
-                            <p
-                              className="trading-insight-slide mt-1 text-sm leading-5 text-slate-300"
-                              key={drawdownInsight}
-                            >
-                              {drawdownInsight}
-                            </p>
+                          <div className={wizardInputArea}>
+                            <label className={labelClass}>
+                              <FieldLabel
+                                label="Current Day P/L"
+                                helpText="Your profit or loss for the current trading day."
+                              />
+                              <input
+                                className={inputClass}
+                                placeholder="-700"
+                                step="1"
+                                type="number"
+                                value={currentDayPL}
+                                onChange={(event) =>
+                                  setCurrentDayPL(event.target.value)
+                                }
+                              />
+                            </label>
+
+                            <label className={labelClass}>
+                              <FieldLabel
+                                label="Open Trade Risk"
+                                helpText="The amount still at risk if open trades hit stop loss."
+                              />
+                              <input
+                                className={inputClass}
+                                min="0"
+                                placeholder="300"
+                                step="1"
+                                type="number"
+                                value={openTradeRisk}
+                                onChange={(event) =>
+                                  setOpenTradeRisk(
+                                    keepPositiveNumber(event.target.value),
+                                  )
+                                }
+                              />
+                            </label>
                           </div>
                         </div>
-                      </div>
+                      )}
+
+                      {currentStep === 3 && (
+                        <div className="grid gap-3">
+                          <div className="grid gap-3 rounded-xl border border-cyan-400/20 bg-slate-950/90 p-3 text-slate-100 sm:grid-cols-[1fr_0.75fr] sm:items-center">
+                            <div>
+                              <p className="text-xs font-bold uppercase tracking-wide text-cyan-300">
+                                Drawdown Report Ready
+                              </p>
+                              <h2 className="mt-1 text-lg font-bold">
+                                Check your daily rule pressure.
+                              </h2>
+                              <p className="mt-1 text-xs leading-5 text-slate-400">
+                                This report shows how much daily loss room
+                                remains before and after open risk.
+                              </p>
+
+                              {/* Result actions: copy plain text or open the branded Share Card modal. */}
+                              <div className="mt-3 flex flex-wrap gap-2">
+                                <button
+                                  className="inline-flex w-fit rounded-lg border border-slate-700/80 px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-white"
+                                  type="button"
+                                  onClick={() => copySummary("drawdown")}
+                                >
+                                  {copiedSummary === "drawdown"
+                                    ? "Copied"
+                                    : copyFailedSummary === "drawdown"
+                                      ? "Copy failed"
+                                      : "Copy Summary"}
+                                </button>
+
+                                <button
+                                  className="inline-flex w-fit rounded-lg border border-slate-700/80 px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-white"
+                                  type="button"
+                                  onClick={() => copyShareLink("drawdown")}
+                                >
+                                  {copiedLink === "drawdown"
+                                    ? "Link copied"
+                                    : "Copy Link"}
+                                </button>
+
+                                <button
+                                  className="inline-flex w-fit rounded-lg bg-cyan-400 px-3 py-1.5 text-xs font-semibold text-slate-950 transition hover:bg-cyan-300"
+                                  type="button"
+                                  onClick={() => openShareCard("drawdown")}
+                                >
+                                  Share Card
+                                </button>
+                              </div>
+
+                              {fallbackText && (
+                                <div className="mt-3 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3">
+                                  <p className="text-xs font-semibold text-amber-300">
+                                    Copy didn&rsquo;t work automatically. Select
+                                    the text below and copy it.
+                                  </p>
+                                  <textarea
+                                    readOnly
+                                    value={fallbackText}
+                                    onFocus={(event) => event.target.select()}
+                                    className="mt-2 h-20 w-full resize-none rounded-md border border-[var(--border-soft)] bg-[var(--surface-strong)] p-2 text-xs text-[var(--text-primary)]"
+                                  />
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="rounded-lg border border-cyan-400/20 bg-cyan-400/10 p-3">
+                              <p className={metricLabel}>
+                                <FieldLabel
+                                  label="Remaining Room"
+                                  helpText="How much more loss room remains before reaching the daily limit."
+                                />
+                              </p>
+                              <p
+                                className={`drawdown-amount mt-1 text-3xl font-bold leading-none ${remainingRoomColor}`}
+                              >
+                                {remainingRoom <= 0
+                                  ? "Breached"
+                                  : formatCurrency(remainingRoom)}
+                              </p>
+                              <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                Before new risk
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="grid gap-3 sm:grid-cols-3">
+                            <div className={metricCard}>
+                              <p className={metricLabel}>
+                                <FieldLabel
+                                  label="Daily Loss Limit"
+                                  helpText="The maximum percentage your prop firm allows you to lose in one day."
+                                />
+                              </p>
+                              <p className="mt-1 text-xl font-bold text-white">
+                                {formatCurrency(dailyLossLimit)}
+                              </p>
+                              <p className="mt-1 text-xs text-slate-500">
+                                Max loss allowed today.
+                              </p>
+                            </div>
+
+                            <div className={metricCard}>
+                              <p className={metricLabel}>Loss Used Today</p>
+                              <p className="drawdown-amount mt-1 text-xl font-bold text-red-300">
+                                {formatCurrency(lossUsedToday)}
+                              </p>
+                              <p className="mt-1 text-xs text-slate-500">
+                                Positive P/L does not count as loss used.
+                              </p>
+                            </div>
+
+                            <div className={metricCard}>
+                              <p className={metricLabel}>
+                                <FieldLabel
+                                  label="After Open Risk"
+                                  helpText="The remaining room after subtracting current open-trade risk."
+                                />
+                              </p>
+                              <p
+                                className={`drawdown-amount mt-1 text-xl font-bold ${remainingAfterRiskColor}`}
+                              >
+                                {formatCurrency(remainingAfterOpenRisk)}
+                              </p>
+                              <p className="mt-1 text-xs text-slate-500">
+                                Remaining after active exposure.
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="grid gap-3 sm:grid-cols-[0.7fr_1.3fr]">
+                            <div className={metricCard}>
+                              <p className={metricLabel}>Status</p>
+                              <p
+                                className={`mt-2 inline-flex rounded-full border px-3 py-1 text-xs font-bold ${statusColorClass}`}
+                              >
+                                {drawdownStatus}
+                              </p>
+                              <p className="mt-2 text-xs leading-5 text-slate-400">
+                                You&rsquo;ve used{" "}
+                                {formatCurrency(lossUsedToday)} of your{" "}
+                                {formatCurrency(dailyLossLimit)} daily limit.{" "}
+                                {formatCurrency(remainingRoom)} room left.
+                              </p>
+                            </div>
+
+                            <div className={metricCard}>
+                              <p className={metricLabel}>Before You Trade</p>
+                              <ul className="mt-2 grid gap-2">
+                                {getBeforeYouTradeChecks(
+                                  drawdownStatus,
+                                  remainingRoom,
+                                  remainingAfterOpenRisk,
+                                ).map((check, index) => (
+                                  <li
+                                    key={index}
+                                    className={`flex items-center gap-2 text-xs font-semibold ${
+                                      check.tone === "ok"
+                                        ? "text-emerald-300"
+                                        : check.tone === "warn"
+                                          ? "text-amber-300"
+                                          : "text-red-300"
+                                    }`}
+                                  >
+                                    <span aria-hidden="true">
+                                      {check.tone === "ok"
+                                        ? "✓"
+                                        : check.tone === "warn"
+                                          ? "!"
+                                          : "✕"}
+                                    </span>
+                                    {check.text}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-800/80 pt-3">
+                    <button
+                      className="rounded-lg border border-slate-700/80 px-3 py-1.5 text-sm font-semibold text-slate-300 transition hover:border-slate-500 hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                      disabled={isFirstStep}
+                      type="button"
+                      onClick={goBack}
+                    >
+                      Back
+                    </button>
+
+                    {!isCurrentStepValid && hasTriedToContinue && (
+                      <p className="text-sm text-amber-300">
+                        {validationMessage}
+                      </p>
                     )}
-                  </div>
-                )}
 
-                <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-800/80 pt-3">
-                  <button
-                    className="rounded-lg border border-slate-700/80 px-3 py-1.5 text-sm font-semibold text-slate-300 transition hover:border-slate-500 hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
-                    disabled={isFirstStep}
-                    type="button"
-                    onClick={goBack}
-                  >
-                    Back
-                  </button>
-
-                  {!isCurrentStepValid && hasTriedToContinue && (
-                    <p className="text-sm text-amber-300">
-                      {validationMessage}
-                    </p>
-                  )}
-
-                  {isLastStep ? (
-                    <button
-                      className="rounded-lg border border-slate-700/80 px-3 py-1.5 text-sm font-semibold text-slate-300 transition hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-white"
-                      type="button"
-                      onClick={startOver}
-                    >
-                      Start Over
-                    </button>
-                  ) : (
-                    <button
-                      className="rounded-lg bg-cyan-400 px-3 py-1.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300"
-                      type="button"
-                      onClick={goNext}
-                    >
-                      {currentStep === steps.length - 2
-                        ? "View Results"
-                        : "Next"}
-                    </button>
-                  )}
-                </footer>
-              </section>
+                    {isLastStep ? (
+                      <button
+                        className="rounded-lg border border-slate-700/80 px-3 py-1.5 text-sm font-semibold text-slate-300 transition hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-white"
+                        type="button"
+                        onClick={startOver}
+                      >
+                        Start Over
+                      </button>
+                    ) : (
+                      <button
+                        className="rounded-lg bg-cyan-400 px-3 py-1.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300"
+                        type="button"
+                        onClick={goNext}
+                      >
+                        {currentStep === steps.length - 2
+                          ? "View Results"
+                          : "Next"}
+                      </button>
+                    )}
+                  </footer>
+                </section>
+              </div>
             </div>
-          </div>
-        </main>
-      </div>
+          </main>
+        </div>
       )}
 
       {/* Share Card modal: preview and PNG download. */}

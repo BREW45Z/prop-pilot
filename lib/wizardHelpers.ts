@@ -65,3 +65,55 @@ export function getRandomDrawdownInsight(status: string) {
 
   return messages[randomIndex];
 }
+
+// "Before You Trade" checklist. Situational: the wording escalates with the
+// drawdown status so a breached account reads as failed, not just cautioned.
+export type BeforeYouTradeTone = "ok" | "warn" | "fail";
+
+export type BeforeYouTradeCheck = {
+  tone: BeforeYouTradeTone;
+  text: string;
+};
+
+export function getBeforeYouTradeChecks(
+  status: string,
+  remainingRoom: number,
+  remainingAfterOpenRisk: number,
+): BeforeYouTradeCheck[] {
+  // Breached: the account is blown. Every row reports failure.
+  if (status === "Breached") {
+    return [
+      { tone: "fail", text: "Daily loss limit breached" },
+      { tone: "fail", text: "This prop account is blown" },
+      { tone: "fail", text: "Stop now. Do not place another trade" },
+    ];
+  }
+
+  // Close to Breach: serious caution, but the account is still alive.
+  if (status === "Close to Breach") {
+    return [
+      { tone: "warn", text: "Very little room left before breach" },
+      {
+        tone: remainingAfterOpenRisk > 0 ? "warn" : "fail",
+        text:
+          remainingAfterOpenRisk > 0
+            ? "Open risk fits, but barely"
+            : "Your open trade risk would blow the account",
+      },
+      { tone: "warn", text: "Only take an A+ setup, or stop for the day" },
+    ];
+  }
+
+  // Healthy: positive checks. Open-risk row still warns if it would breach.
+  return [
+    { tone: "ok", text: "Within your daily loss limit" },
+    {
+      tone: remainingAfterOpenRisk > 0 ? "ok" : "fail",
+      text:
+        remainingAfterOpenRisk > 0
+          ? "Still have room after open risk"
+          : "Your open trade risk would blow the account",
+    },
+    { tone: "ok", text: "Healthy buffer remaining" },
+  ];
+}

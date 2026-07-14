@@ -22,7 +22,7 @@
 }
 
 :root[data-theme="light"] {
-  --app-bg: #dfe4ec;
+  --app-bg: #bcc4d0;
   --surface: rgba(235, 239, 246, 0.9);
   --surface-muted: rgba(222, 228, 237, 0.78);
   --surface-strong: rgba(241, 244, 248, 0.94);
@@ -70,7 +70,7 @@ body {
 
 :root[data-theme="light"] body,
 :root[data-theme="light"] .prop-app {
-  background-color: #dfe4ec !important;
+  background-color: #bcc4d0 !important;
 }
 
 /* Root page layout. */
@@ -256,6 +256,17 @@ body {
 :root[data-theme="light"] .prop-app .text-slate-500,
 :root[data-theme="light"] .prop-app .text-slate-600 {
   color: var(--text-muted) !important;
+}
+
+/* Checklist status colors need darker shades to stay readable in light mode. */
+:root[data-theme="light"] .prop-app .text-amber-300 {
+  color: #b45309 !important;
+}
+:root[data-theme="light"] .prop-app .text-emerald-300 {
+  color: #047857 !important;
+}
+:root[data-theme="light"] .prop-app .text-red-300 {
+  color: #b91c1c !important;
 }
 
 :root[data-theme="light"] .prop-app .bg-slate-950\/95,

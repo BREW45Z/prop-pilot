@@ -88,6 +88,52 @@ Current implementation includes:
 
 Trading Insights focus on discipline, risk control, and avoiding rule breaches. They do not provide market predictions, trade signals, or buy/sell instructions.
 
+### Before You Trade Checklist
+
+Purpose:
+Turn the Daily Drawdown result into a fast go/no-go check a trader can glance
+at before entering a trade. Supports the discipline brand and gives traders a
+reason to open Prop Pilot before every session (stickiness).
+
+Placement:
+On the Daily Drawdown results step, near the Status card.
+
+The checklist shows three checks. Each is a pass (ok) or a warning, based only
+on values the calculator already produces. No new calculation is introduced.
+
+Checks:
+
+```txt
+1. Within daily loss limit
+   ok if remainingRoom > 0
+   warn otherwise ("Daily loss limit is breached")
+
+2. Room after open risk
+   ok if remainingAfterOpenRisk > 0
+   warn otherwise ("Your open trade risk would breach the limit")
+
+3. Buffer health
+   ok if status is "Healthy"
+   warn if status is "Close to Breach" or "Breached"
+```
+
+Display:
+
+- A small "Before You Trade" heading.
+- Each row: a check or warning icon, plus short plain-English text.
+- Ok rows use the existing emerald color, warn rows use amber, matching the
+  status colors already in the app.
+
+Rules:
+
+- Display only. Reuse existing values (remainingRoom, remainingAfterOpenRisk,
+  drawdownStatus). Do not change any formula.
+- No new dependencies.
+- Keep copy human and plain (no em dashes).
+
+MVP Status:
+Planned, building now.
+
 ## Current MVP Product Features
 
 The launch-polished MVP also includes:

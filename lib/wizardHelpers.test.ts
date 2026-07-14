@@ -1,4 +1,5 @@
 import {
+  getBeforeYouTradeChecks,
   getDrawdownInsightStatus,
   getRandomDrawdownInsight,
   isActiveTool,
@@ -106,6 +107,42 @@ const healthyInsight = getRandomDrawdownInsight("unknown status");
 expectTrue(
   drawdownInsightMessages.Healthy.includes(healthyInsight),
   "getRandomDrawdownInsight defaults to a Healthy message",
+);
+
+// getBeforeYouTradeChecks: situational tones per status.
+// Breached -> every row fails (account blown).
+const breachedChecks = getBeforeYouTradeChecks("Breached", -100, -200);
+expectTrue(
+  breachedChecks.every((check) => check.tone === "fail"),
+  "Breached checklist is all fail",
+);
+
+// Close to Breach with open risk that still fits -> all warn.
+const closeChecks = getBeforeYouTradeChecks("Close to Breach", 50, 20);
+expectTrue(
+  closeChecks.every((check) => check.tone === "warn"),
+  "Close to Breach with fitting open risk is all warn",
+);
+
+// Close to Breach but open risk would blow it -> that row is fail.
+const closeFailChecks = getBeforeYouTradeChecks("Close to Breach", 50, -10);
+expectTrue(
+  closeFailChecks.some((check) => check.tone === "fail"),
+  "Close to Breach with breaching open risk has a fail row",
+);
+
+// Healthy with room after open risk -> all ok.
+const healthyChecks = getBeforeYouTradeChecks("Healthy", 500, 400);
+expectTrue(
+  healthyChecks.every((check) => check.tone === "ok"),
+  "Healthy with room is all ok",
+);
+
+// Healthy but open risk alone would blow the account -> that row is fail.
+const healthyFailChecks = getBeforeYouTradeChecks("Healthy", 500, -50);
+expectTrue(
+  healthyFailChecks.some((check) => check.tone === "fail"),
+  "Healthy with breaching open risk has a fail row",
 );
 
 console.log("All wizard helper tests passed.");
