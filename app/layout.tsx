@@ -11,9 +11,9 @@ const geist = Geist({
 const title = "Prop Pilot";
 const description =
   "A simple risk and drawdown toolkit for disciplined prop traders.";
+// og-image-light.png is a correctly sized 1200x630 image. Using a single,
+// correctly declared image avoids broken/mismatched social previews.
 const previewImage =
-  "/brand/prop_pilot_approved_dual_mode_asset_pack/og-image-dark.png";
-const previewImageLight =
   "/brand/prop_pilot_approved_dual_mode_asset_pack/og-image-light.png";
 
 export const metadata: Metadata = {
@@ -34,12 +34,6 @@ export const metadata: Metadata = {
     images: [
       {
         url: previewImage,
-        width: 1200,
-        height: 630,
-        alt: "Prop Pilot",
-      },
-      {
-        url: previewImageLight,
         width: 1200,
         height: 630,
         alt: "Prop Pilot",
