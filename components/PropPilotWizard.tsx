@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import FeaturedOnBadges from "@/components/FeaturedOnBadges";
 import { useEffect, useRef, useState } from "react";
 import {
   brandAssets,
@@ -669,13 +670,13 @@ Calculated with Prop Pilot`;
       <AtomBackground />
 
       {!hasStarted ? (
-        <div className="relative z-10 grid min-h-screen content-between px-5 py-7 sm:px-8 lg:px-10">
+        <div className="relative z-10 grid min-h-screen content-between px-5 py-5 sm:px-8 sm:py-6 lg:px-10">
           <header className="flex items-center justify-between gap-4">
             <BrandMark theme={theme} variant="landing" />
             <ThemeToggle theme={theme} onToggle={toggleTheme} />
           </header>
 
-          <div className="mx-auto grid w-full max-w-4xl justify-items-center gap-7 py-10 text-center">
+          <div className="mx-auto grid w-full max-w-4xl justify-items-center gap-5 py-4 text-center sm:gap-6 sm:py-6">
             <div className="grid gap-4">
               <h1 className="mx-auto max-w-3xl text-4xl font-black tracking-tight text-[var(--text-primary)] sm:text-5xl">
                 Know your risk <span className="text-cyan-300">before</span> you
@@ -737,28 +738,30 @@ Calculated with Prop Pilot`;
             <p className="text-sm text-[var(--text-muted)]">
               Free to use. No sign-up required.
             </p>
+
+            <FeaturedOnBadges theme={theme} />
           </div>
 
-          <footer className="grid justify-items-center gap-2 pt-6 text-center">
-            <span className="h-px w-24 bg-[var(--border-soft)]" />
-            <p className="text-[11px] font-bold uppercase tracking-wide text-[var(--text-faint)]">
-              Tools
-            </p>
-            <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-[var(--text-muted)]">
+          {/* Compact single-line footer. The two tool links are the only
+              internal links to the SEO pages, so Google can crawl them from
+              the homepage — keep them and keep their URLs unchanged. */}
+          <footer className="mx-auto flex w-full max-w-4xl flex-col items-center justify-between gap-2 border-t border-[var(--border-soft)] pt-4 text-xs text-[var(--text-faint)] sm:flex-row">
+            <p>© 2026 Prop Pilot</p>
+            <nav className="flex items-center gap-x-3">
               <Link
                 href="/lot-size-calculator"
                 className="transition hover:text-cyan-300"
               >
                 Lot Size
               </Link>
-              <span className="text-[var(--text-faint)]">·</span>
+              <span aria-hidden="true">·</span>
               <Link
                 href="/prop-firm-drawdown-calculator"
                 className="transition hover:text-cyan-300"
               >
                 Daily Drawdown
               </Link>
-            </p>
+            </nav>
           </footer>
         </div>
       ) : (
